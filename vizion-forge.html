@@ -311,6 +311,39 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
 .vd-bd{padding:11px;background:var(--s2);font-size:12px;line-height:1.72;color:var(--text2);border:1px solid var(--line);border-top:none;border-radius:0 0 var(--r2) var(--r2);}
 .vd-bd strong{color:var(--text);}
 
+/* ── SCANNER ── */
+.scan-section{padding:0 14px 12px;}
+.scan-hd{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;font-weight:700;margin-bottom:7px;padding-top:10px;border-top:1px solid var(--line);}
+.scan-item{display:flex;gap:7px;align-items:flex-start;padding:7px 9px;border-radius:var(--r2);margin-bottom:5px;font-size:11px;line-height:1.5;}
+.scan-item:last-child{margin-bottom:0;}
+.scan-crit{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.18);}
+.scan-warn{background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.18);}
+.scan-opt{background:var(--s2);border:1px solid var(--line);}
+.scan-badge{font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 5px;border-radius:3px;white-space:nowrap;font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:1px;}
+.scan-crit .scan-badge{background:rgba(220,38,38,.12);color:var(--bad);}
+.scan-warn .scan-badge{background:rgba(180,83,9,.12);color:var(--warn);}
+.scan-opt .scan-badge{background:var(--s3);color:var(--text3);}
+.scan-word{font-weight:700;font-style:italic;color:var(--text);}
+.scan-fix{color:var(--text3);margin-top:1px;}
+/* ── SEARCH TERMS ── */
+.st-card{background:var(--white);border:1px solid rgba(0,180,158,.22);border-radius:var(--r);padding:13px 16px;margin-bottom:14px;display:none;animation:fu .35s ease;}
+.st-card.on{display:block;}
+.st-hd{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'JetBrains Mono',monospace;font-weight:700;margin-bottom:10px;}
+.st-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;background:var(--s2);border:1px solid var(--line);border-radius:var(--r2);margin-bottom:6px;font-size:12px;flex-wrap:wrap;}
+.st-item:last-child{margin-bottom:0;}
+.st-term{font-weight:700;color:var(--text);min-width:160px;}
+.st-match{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:3px;font-weight:800;white-space:nowrap;}
+.st-exact{background:rgba(5,150,105,.1);color:var(--good);border:1px solid rgba(5,150,105,.2);}
+.st-phrase{background:rgba(0,180,158,.1);color:var(--accent);border:1px solid rgba(0,180,158,.2);}
+.st-bmm{background:rgba(124,58,237,.08);color:var(--purple);border:1px solid rgba(124,58,237,.2);}
+.st-broad{background:var(--s3);color:var(--text3);border:1px solid var(--line);}
+.st-why{font-size:11px;color:var(--text3);flex:1;}
+/* ── ANGLE SELECTOR ── */
+.angle-hd{font-size:11px;font-weight:700;color:var(--text2);margin:14px 0 7px;padding-top:12px;border-top:1px solid var(--line);}
+.angle-grid{display:flex;flex-direction:column;gap:5px;}
+.ag{border:1.5px solid var(--line);border-radius:var(--r2);padding:9px 12px;cursor:pointer;transition:all .2s;font-size:12px;color:var(--text2);background:var(--white);}
+.ag:hover{border-color:var(--accent);color:var(--accent);}
+.ag.sel{border-color:var(--accent);background:var(--aglow2);color:var(--accent);font-weight:600;}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:18px;right:18px;z-index:999;background:var(--white);border:1px solid var(--line2);border-radius:var(--r2);padding:9px 14px;font-size:12px;color:var(--text);font-family:'JetBrains Mono',monospace;transform:translateY(60px);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 24px rgba(0,0,0,.1);}
 .toast.on{transform:translateY(0);opacity:1;}
@@ -594,6 +627,16 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
     </div>
   </div>
 
+  <div class="card" id="swimlaneCard" style="display:none;">
+    <div class="card-ttl">Offer Type</div>
+    <div class="card-sub">Select the specific sub-type for this campaign. Each lane uses different angles, proof mechanisms, and copy rules.</div>
+    <div class="opt-grid" id="laneGrid"></div>
+    <div id="angleWrap" style="display:none;">
+      <div class="angle-hd">Psychological Angle — choose the entry point for this ad</div>
+      <div class="angle-grid" id="angleGrid"></div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="adv-tog" id="advTog" onclick="toggleAdv()">
       <span class="adv-arr">▼</span>
@@ -718,6 +761,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
         <span class="vrd" id="aVrd">ANALYZING</span>
       </div>
       <div class="audit-bd" id="aBd"></div>
+    </div>
+
+    <div class="st-card" id="searchCard">
+      <div class="st-hd">🔍 Target Search Terms</div>
+      <div id="searchBd"></div>
     </div>
 
     <div id="varSec">
@@ -948,10 +996,117 @@ const WC = {
 };
 
 // ═══════════════════════════════════════════
+// SWIMLANES — NICHE × OFFER-TYPE MATRIX
+// ═══════════════════════════════════════════
+const SWIMLANES={
+  real_estate:{lanes:[
+    {id:'first_buyer',label:'First-Time Buyer',ico:'🏡',angles:['Fear of missing the rate window — urgency is now or never','Overwhelmed and confused by the process — position as the guide','Ready to stop paying rent for someone else\'s mortgage']},
+    {id:'investor',label:'Investor / Cash Offer',ico:'💰',angles:['Off-market deal access before it hits Zillow or Redfin','Fast close advantage — cash offer beats financed buyers every time','Portfolio expansion without the typical delays and contingencies']},
+    {id:'downsizer',label:'Downsizer / Seller',ico:'📦',angles:['Life transition — empty nest, retirement, or major change','Maximize net proceeds before listing in this market','Skip repairs, showings, and open houses entirely']}
+  ]},
+  life_insurance:{lanes:[
+    {id:'final_expense',label:'Final Expense',ico:'🕊️',angles:['Family protection — I refuse to be a burden when I am gone','Burial and debt coverage designed for adults 50 to 85','No medical exam — just 3 health questions, decision same day']},
+    {id:'term_life',label:'Term Life',ico:'🛡️',angles:['Income replacement — protect what your family depends on','Mortgage protection tied directly to the loan balance','Most affordable coverage during peak earning years']},
+    {id:'iul',label:'IUL / Whole Life',ico:'📈',angles:['Tax-free wealth building alongside permanent coverage','Retirement income supplement with downside protection','Legacy and estate planning for high earners']}
+  ]},
+  health_insurance:{lanes:[
+    {id:'aca',label:'ACA / Marketplace',ico:'🏥',angles:['Self-employed or between jobs — see what you actually qualify for','Reduce your monthly premium based on your household income','Open enrollment window — act before it closes']},
+    {id:'group',label:'Small Business Group',ico:'👥',angles:['Attract and retain employees with competitive benefits','Lower per-employee cost through group purchasing power','Stay compliant with ACA requirements without the complexity']},
+    {id:'medicare',label:'Medicare Supplement',ico:'💊',angles:['Fill the coverage gaps Medicare leaves behind','Turning 65 or newly Medicare-eligible — get this right the first time','Reduce out-of-pocket costs on prescriptions and hospital stays']}
+  ]},
+  coaching_courses:{lanes:[
+    {id:'biz_coaching',label:'Business Coaching',ico:'🚀',angles:['Stuck at the same revenue ceiling for 12 months or more','Trading time for dollars with no leverage or exit','Ready to build a business that runs without requiring you']},
+    {id:'online_course',label:'Online Course',ico:'🎓',angles:['Identity transformation — who they become after completing this','Specific skill gap with a measurable and verifiable outcome','Faster path to a result they have been trying to reach for years']},
+    {id:'group_program',label:'Group Program / Cohort',ico:'👥',angles:['Community and accountability as the core mechanism for results','Cohort urgency — this group starts on a fixed date, limited seats','Curriculum plus live coaching hybrid — structure and flexibility']}
+  ]},
+  saas_software:{lanes:[
+    {id:'smb_ops',label:'SMB Operations',ico:'⚙️',angles:['Replace a manual process that costs X hours every single week','Consolidate 3 separate tools into one — reduce stack complexity and cost','Implementation in days not months — first value before the trial ends']},
+    {id:'enterprise',label:'Enterprise / Team',ico:'🏢',angles:['Compliance, audit trail, and admin controls enterprise requires','Cross-team collaboration and visibility at scale','ROI case built on measurable cost reduction and time savings']},
+    {id:'vertical_saas',label:'Industry-Specific',ico:'🎯',angles:['Built specifically for this industry — no workarounds or duct tape','Replaces a legacy tool that was never designed for this workflow','Native integrations with the tools this industry already runs on']}
+  ]}
+};
+
+// ═══════════════════════════════════════════
+// TRUST ASSETS — PROOF MECHANISM MAP
+// ═══════════════════════════════════════════
+const TRUST_ASSETS={
+  saas_software:{
+    default:['workflow hours saved per week — specific number','implementation speed in days not months','number of native integrations','cost per seat vs. nearest alternative'],
+    smb_ops:['manual hours eliminated per week','time from signup to first result','integrations with QuickBooks, Slack, Google Workspace'],
+    enterprise:['SOC 2 or HIPAA compliance status','admin dashboard and audit log access','dedicated onboarding and SLA terms'],
+    vertical_saas:['industry-specific workflow it replaces by name','average time from signup to first measurable result','customer retention rate in this vertical']
+  },
+  life_insurance:{
+    default:['underwriting conditions accepted — stated clearly','coverage amount range e.g. $5,000 to $25,000','decision timeline — same-day or within 24 hours'],
+    final_expense:['no medical exam — qualification criteria only','acceptance age range e.g. 50 to 85','coverage available from day one for accidental death'],
+    term_life:['coverage amount relative to income replacement multiple','premium lock-in period length','conversion option to permanent coverage'],
+    iul:['indexed return floor — downside protection mechanism','tax treatment under IRC 7702','projected cash value at retirement age example']
+  },
+  health_insurance:{
+    default:['premium range based on income and household size','network breadth — number of in-network providers or hospitals','deductible and out-of-pocket maximum examples'],
+    aca:['subsidy eligibility language and income thresholds','premium reduction examples by income bracket','special enrollment period qualifying triggers'],
+    group:['per-employee cost vs. individual market comparison','tax deductibility of employer contributions','employee retention impact benchmark'],
+    medicare:['specific gap coverage examples for Part A and Part B','monthly premium range for supplement plans','prescription drug plan integration options']
+  },
+  coaching_courses:{
+    default:['transformation timeline — specific weeks or months','cohort or alumni results with real specifics','identity outcome — describe who they become'],
+    biz_coaching:['revenue or client growth results from named past clients','specific methodology or framework name and what makes it different','access frequency — number of live calls per month'],
+    online_course:['completion rate or satisfaction score','specific skill or outcome achieved by graduates','average time to complete and see results'],
+    group_program:['cohort size — limited enrollment creates exclusivity','live session frequency and format','community platform and accountability structure described']
+  },
+  real_estate:{
+    default:['days on market vs. local area average','list price to sale price ratio','number of transactions closed in target area or price range'],
+    first_buyer:['average down payment assistance programs available in area','realistic timeline from pre-approval to close','number of first-time buyers helped in the past 12 months'],
+    investor:['average days to close on cash or off-market offer','off-market deal sourcing methodology described','average below-market discount achieved on recent deals'],
+    downsizer:['average net proceeds vs. traditional listing process','days to offer vs. traditional listing timeline','zero-repair or as-is transaction option available']
+  },
+  legal_services:{
+    default:['case type qualification criteria stated clearly','statute of limitations timing triggers for this case type','consultation format — phone, video, or in-person, and how quickly']
+  },
+  mortgage_lending:{
+    default:['rate range based on credit profile and loan type','pre-approval timeline — how fast they know','loan programs available for this specific situation']
+  },
+  medical_dental:{
+    default:['consultation timeline — how quickly they can be seen','insurance accepted or transparent cash pay pricing','specific condition volume or years of experience']
+  },
+  other:{default:['specific result with a real number attached','timeline to that result — weeks or months','qualification criteria for best-fit customers']}
+};
+
+// ═══════════════════════════════════════════
+// SCANNER FLAGS — POST-GEN LANGUAGE AUDIT
+// ═══════════════════════════════════════════
+const SCANNER_FLAGS={
+  critical:[
+    {re:/\bguaranteed?\b/gi,word:'guaranteed',fix:'Use "may qualify" or "see if you qualify"'},
+    {re:/\brisk[- ]free\b/gi,word:'risk-free',fix:'Describe the actual guarantee or trial terms specifically'},
+    {re:/\b#\s*1\b/gi,word:'#1',fix:'Use a specific ranking with a verifiable source'},
+    {re:/\b100%\s*(approved|guaranteed|free|acceptance)\b/gi,word:'100% [claim]',fix:'State the actual approval conditions instead'},
+    {re:/\bfree\s+(coverage|insurance|policy|money|approval)\b/gi,word:'free [product]',fix:'Describe what they receive and under what conditions'},
+    {re:/\beveryone qualifies\b/gi,word:'everyone qualifies',fix:'State the actual qualification criteria'}
+  ],
+  warning:[
+    {re:/\bbest\b/gi,word:'best',fix:'Specify best at what — and how it is proven'},
+    {re:/\bproven\b/gi,word:'proven',fix:'State the specific proof — a number, case study, or data point'},
+    {re:/\beveryone\b/gi,word:'everyone',fix:'Use "many people in your situation" or qualify by criteria'},
+    {re:/\balways\b/gi,word:'always',fix:'Use "in most cases" or state a specific condition'},
+    {re:/\binstant\b/gi,word:'instant',fix:'Use "often same-day" or a specific timeframe'},
+    {re:/\bno[- ]brainer\b/gi,word:'no-brainer',fix:'Let the specific value comparison do the work instead'}
+  ],
+  optimization:[
+    {re:/\bclick here\b/gi,word:'click here',fix:'Use a specific action: "answer 3 questions" or "book a time"'},
+    {re:/\blearn more\b/gi,word:'learn more',fix:'State what they learn: "see if you qualify" or "find out your rate"'},
+    {re:/\bfind out\b/gi,word:'find out',fix:'Specify what they find out: "find out if you qualify in 2 minutes"'},
+    {re:/\bcontact us\b/gi,word:'contact us',fix:'Use a specific next step: "call us" or "book a 15-minute call"'},
+    {re:/\bget started\b/gi,word:'get started',fix:'State the first specific step: "answer 3 questions to begin"'}
+  ]
+};
+
+// ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
 let products=[], selPlat='facebook', selFmt='video', selectedDur='60', selectedTone='Conversational';
 let selTemp='cold', selObj='booked_call';
+let selLane='', selAngle='';
 let lastResp='', lastVars=[], lastCtx='';
 let lockedVar=null, editHistory=[];
 let progInt=null;
@@ -991,6 +1146,13 @@ function selOpt(el,type){
   if(type==='fmt') selFmt=el.dataset.v;
   if(type==='temp') selTemp=el.dataset.v;
   if(type==='obj') selObj=el.dataset.v;
+  if(type==='lane'){selLane=el.dataset.v;selAngle='';renderAngles();}
+  if(type==='angle'){
+    document.querySelectorAll('#angleGrid .ag').forEach(a=>a.classList.remove('sel'));
+    el.classList.add('sel');
+    selAngle=el.dataset.v;
+    return;
+  }
 }
 function selectDur(el){
   document.querySelectorAll('.dc').forEach(c=>c.classList.remove('sel'));
@@ -1009,7 +1171,33 @@ function toggleAdv(){
   sec.classList.toggle('open');
 }
 function handleNiche(){
-  document.getElementById('customNicheWrap').style.display=gv('niche')==='other'?'block':'none';
+  const n=gv('niche');
+  document.getElementById('customNicheWrap').style.display=n==='other'?'block':'none';
+  const sl=SWIMLANES[n];
+  const card=document.getElementById('swimlaneCard');
+  if(sl){
+    card.style.display='block';
+    document.getElementById('laneGrid').innerHTML=sl.lanes.map(l=>
+      `<div class="oc${selLane===l.id?' sel':''}" data-v="${l.id}" onclick="selOpt(this,'lane')">
+        <div class="oc-ico">${l.ico}</div>
+        <div class="oc-name">${l.label}</div>
+      </div>`
+    ).join('');
+    renderAngles();
+  } else {
+    card.style.display='none';
+    selLane='';selAngle='';
+  }
+}
+function renderAngles(){
+  const sl=SWIMLANES[gv('niche')];
+  if(!sl||!selLane){document.getElementById('angleWrap').style.display='none';return;}
+  const lane=sl.lanes.find(l=>l.id===selLane);
+  if(!lane){document.getElementById('angleWrap').style.display='none';return;}
+  document.getElementById('angleWrap').style.display='block';
+  document.getElementById('angleGrid').innerHTML=lane.angles.map((a,i)=>
+    `<div class="ag${selAngle===String(i)?' sel':''}" data-v="${i}" onclick="selOpt(this,'angle')">${a}</div>`
+  ).join('');
 }
 
 // ═══════════════════════════════════════════
@@ -1055,7 +1243,7 @@ function saveProfile(){
     price:gv('price'),tried:gv('tried'),niche:gv('niche'),customNiche:gv('customNiche'),
     persona:gv('persona'),trigger:gv('trigger'),mechanism:gv('mechanism'),ctaObj:gv('ctaObj'),
     voc:gv('voc'),objections:gv('objections'),proof:gv('proof'),winners:gv('winners'),
-    priority:gv('priority'),plat:selPlat,fmt:selFmt,dur:selectedDur,tone:selectedTone,temp:selTemp,obj:selObj
+    priority:gv('priority'),plat:selPlat,fmt:selFmt,dur:selectedDur,tone:selectedTone,temp:selTemp,obj:selObj,lane:selLane,angle:selAngle
   };
   localStorage.setItem('vf_v4',JSON.stringify(d));
   const ok=document.getElementById('saveOk');
@@ -1081,6 +1269,9 @@ function loadProfile(){
     if(d.tone){selectedTone=d.tone;document.querySelectorAll('.to').forEach(t=>t.classList.toggle('sel',t.dataset.v===d.tone));}
     if(d.temp){selTemp=d.temp;document.querySelectorAll('#tempGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.temp));}
     if(d.obj){selObj=d.obj;document.querySelectorAll('#objGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.obj));}
+    if(d.lane){selLane=d.lane;}
+    if(d.angle){selAngle=d.angle;}
+    if(d.niche)handleNiche();
   }catch(e){}
 }
 
@@ -1093,6 +1284,11 @@ function buildSys(){
   const nLabel=nKey==='other'?(gv('customNiche')||'Custom Industry'):n.label;
   const wc=WC[selectedDur]||WC['60'];
   const pri=gv('priority')||'quality';
+  const offerLane=SWIMLANES[nKey]?.lanes.find(l=>l.id===selLane);
+  const offerTypeLabel=offerLane?.label||'';
+  const selectedAngleText=offerLane?.angles[parseInt(selAngle)]||'';
+  const trustMap=TRUST_ASSETS[nKey]||TRUST_ASSETS.other;
+  const trustList=(trustMap[selLane]||trustMap.default||[]).join(' | ');
   const YMYL_NICHES=['life_insurance','health_insurance','financial_services','mortgage_lending','medical_dental','legal_services','real_estate'];
   const isYMYL=YMYL_NICHES.includes(nKey);
   const tempDef={
@@ -1246,6 +1442,9 @@ COMPLIANCE RISKS — NEVER DO ANY OF THESE: ${n.risk.join(' | ')}
 PREFERRED LANGUAGE FOR THIS NICHE: ${n.prefer.join(' | ')}
 WORDS AND PHRASES TO AVOID: ${n.avoid.join(', ')}
 COPY BEHAVIOR FOR THIS NICHE: ${n.copy}
+${offerTypeLabel?`OFFER TYPE / SUB-LANE: ${offerTypeLabel}`:''}
+${selectedAngleText?`PSYCHOLOGICAL ENTRY ANGLE: ${selectedAngleText} — build the hook and opening section around this specific angle. Do not deviate from it.`:''}
+TRUST ASSET REQUIREMENTS: Weave these specific proof mechanisms naturally into the copy — do not list them generically: ${trustList}
 
 PLATFORM: ${selPlat} | FORMAT: ${selFmt}${selPlat!=='google'?' | DURATION: '+selectedDur+' seconds':''}
 ${selPlat==='google'?'CHARACTER LIMITS: Headlines 30 chars max | Descriptions 90 chars max | Display paths 15 chars max':`TARGET WORD COUNT: ${wc.min} to ${wc.max} words (spoken portion only)`}
@@ -1285,7 +1484,11 @@ ${platFmt[selPlat]||platFmt.facebook}
 **Human Voice Check:** [NATURAL or ADJUSTED]
 
 ## OFFER INTELLIGENCE NOTE
-[1 to 3 sentences of strategic insight about the offer, pricing, packaging, or market positioning that would improve results beyond the copy itself — the insight most ad writers never give you]`;
+[1 to 3 sentences of strategic insight about the offer, pricing, packaging, or market positioning that would improve results beyond the copy itself — the insight most ad writers never give you]
+${selPlat==='google'?`
+## TARGET SEARCH TERMS
+[List 3 to 5 high-intent search terms this audience is actively searching — buyer-intent language only, not awareness-stage.
+Format each line exactly as: "search term" — [EXACT] / [PHRASE] / BMM — one sentence on why this reflects buyer intent not researcher intent]`:''}`;
 }
 
 // ═══════════════════════════════════════════
@@ -1416,6 +1619,7 @@ function parseResp(txt){
   }
   if(!p.vars.length)p.vars.push({num:'1',body:txt,wc:'—',filter:'',hv:'NATURAL'});
   p.intel=secTxt(txt,'OFFER INTELLIGENCE NOTE');
+  p.searchTerms=secTxt(txt,'TARGET SEARCH TERMS');
   return p;
 }
 
@@ -1437,6 +1641,7 @@ function renderOut(p){
   grid.innerHTML='';
   lastVars=p.vars;
   p.vars.forEach((v,i)=>grid.appendChild(mkCard(v,i)));
+  renderSearchTerms(p.searchTerms||'');
   if(p.intel){document.getElementById('intelCard').classList.add('on');document.getElementById('intelBd').innerHTML=`<p>${md(p.intel)}</p>`;}
   document.getElementById('chgCard').classList.add('on');
   document.getElementById('vdict').classList.remove('on');
@@ -1461,7 +1666,8 @@ function mkCard(v,idx){
       </div>
     </div>
     <div class="vc-body">${secs}</div>
-    ${v.filter?`<div style="padding:0 14px 12px;"><div style="background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.15);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--warn);display:flex;gap:6px;"><span>🎯</span><span><strong>Lead Filter:</strong> ${eh(v.filter)}</span></div></div>`:''}
+    ${v.filter?`<div style="padding:0 14px 8px;"><div style="background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.15);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--warn);display:flex;gap:6px;"><span>🎯</span><span><strong>Lead Filter:</strong> ${eh(v.filter)}</span></div></div>`:''}
+    ${renderScanResults(runScanner(v.body))}
     <div class="vc-ft">
       <div class="wc">WORDS: <span>${v.wc}</span> &nbsp;·&nbsp; VOICE: <span style="color:${v.hv.toLowerCase().includes('natural')?'var(--good)':'var(--warn)'};">${eh(v.hv.split('—')[0].trim().substring(0,14))}</span></div>
       <button class="btn-g" onclick="regenVar(${idx})" style="padding:5px 9px;font-size:11px;">↺ Regen</button>
@@ -1517,6 +1723,7 @@ async function doGen(){
   document.getElementById('errBox').classList.remove('on');
   document.getElementById('intelCard').classList.remove('on');
   document.getElementById('chgCard').classList.remove('on');
+  document.getElementById('searchCard').classList.remove('on');
   document.getElementById('varGrid').innerHTML='';
   startProg();
   try{
@@ -1644,6 +1851,55 @@ async function applyChg(){
   document.getElementById('vdict').classList.remove('on');
   document.getElementById('chgInp').value='';
   await doGen();
+}
+
+// ═══════════════════════════════════════════
+// POST-GEN SCANNER
+// ═══════════════════════════════════════════
+function runScanner(body){
+  const flags=[];
+  const clean=body.replace(/\[EMOTION[^\]]*\]/gi,'').replace(/\[VOLUME[^\]]*\]/gi,'');
+  ['critical','warning','optimization'].forEach(sev=>{
+    SCANNER_FLAGS[sev].forEach(f=>{
+      const matches=[...clean.matchAll(f.re)];
+      if(matches.length)flags.push({sev,word:f.word,fix:f.fix,count:matches.length});
+    });
+  });
+  return flags;
+}
+function renderScanResults(flags){
+  if(!flags.length)return '<div style="padding:6px 14px 10px;font-size:10px;color:var(--good);font-family:\'JetBrains Mono\',monospace;border-top:1px solid var(--line);">✓ Language scan clean</div>';
+  const sevLabel={critical:'CRITICAL',warning:'WARNING',optimization:'OPTIMIZE'};
+  const sevCls={critical:'scan-crit',warning:'scan-warn',optimization:'scan-opt'};
+  const crit=flags.filter(f=>f.sev==='critical').length;
+  const warn=flags.filter(f=>f.sev==='warning').length;
+  const opt=flags.filter(f=>f.sev==='optimization').length;
+  let html='<div class="scan-section">';
+  html+=`<div class="scan-hd">⚡ Language Scanner${crit?` · ${crit} Critical`:''}${warn?` · ${warn} Warning`:''}${opt?` · ${opt} Optimize`:''}</div>`;
+  flags.forEach(f=>{
+    html+=`<div class="scan-item ${sevCls[f.sev]}"><span class="scan-badge">${sevLabel[f.sev]}</span><div><span class="scan-word">"${eh(f.word)}"</span>${f.count>1?` ×${f.count}`:''}<div class="scan-fix">→ ${eh(f.fix)}</div></div></div>`;
+  });
+  html+='</div>';
+  return html;
+}
+function renderSearchTerms(txt){
+  const card=document.getElementById('searchCard');
+  if(!txt){card.classList.remove('on');return;}
+  const lines=txt.split('\n').filter(l=>l.trim()&&l.includes('"'));
+  if(!lines.length){card.classList.remove('on');return;}
+  const html=lines.map(line=>{
+    const termM=line.match(/"([^"]+)"/);
+    if(!termM)return '';
+    const term=termM[1];
+    const matchM=line.match(/\[?(EXACT|PHRASE|BMM|BROAD)\]?/i);
+    const match=(matchM?matchM[1]:'BROAD').toUpperCase();
+    const cls=match==='EXACT'?'st-exact':match==='PHRASE'?'st-phrase':match==='BMM'?'st-bmm':'st-broad';
+    const parts=line.split('—');
+    const why=parts.slice(2).join('—').trim();
+    return `<div class="st-item"><span class="st-term">${eh(term)}</span><span class="st-match ${cls}">${match}</span>${why?`<span class="st-why">${eh(why)}</span>`:''}</div>`;
+  }).filter(Boolean).join('');
+  document.getElementById('searchBd').innerHTML=html||`<p style="font-size:12px;color:var(--text3);line-height:1.6;">${md(txt)}</p>`;
+  card.classList.add('on');
 }
 
 // ═══════════════════════════════════════════
