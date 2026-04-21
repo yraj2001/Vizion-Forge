@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vizion Forge — Ad Creative Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f8fb;--white:#ffffff;--s2:#f3f4f6;--s3:#eaecf0;--s4:#e2e5ea;
+  --line:#e2e5ea;--line2:#d1d5db;
+  --accent:#00b49e;--a2:#00d4b8;
+  --aglow:rgba(0,180,158,.14);--aglow2:rgba(0,180,158,.07);
+  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
+  --good:#059669;--warn:#b45309;--bad:#dc2626;--purple:#7c3aed;
+  --r:12px;--r2:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--white);border-bottom:1px solid var(--line);
+  padding:0 24px;height:52px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:100;
+}
+.brand{font-weight:800;font-size:16px;letter-spacing:-.3px;}
+.brand em{font-style:normal;color:var(--accent);}
+.brand-tag{
+  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);margin-left:8px;
+  font-family:'JetBrains Mono',monospace;
+}
+.steps-bar{display:flex;align-items:center;gap:0;}
+.si{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;
+  border-radius:20px;font-size:12px;font-weight:600;color:var(--text3);
+  transition:all .2s;cursor:pointer;
+}
+.si:hover{color:var(--text2);}
+.si.active{color:var(--accent);background:var(--aglow2);}
+.si.done{color:var(--good);}
+.sn{
+  width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+}
+.si.done .sn{background:var(--good);border-color:var(--good);color:white;}
+.sdiv{width:20px;height:1px;background:var(--line);}
+.hdr-right{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.5px;}
+
+/* ── CONTENT ── */
+.content{max-width:860px;margin:0 auto;padding:24px 20px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:14px;}
+.card-ttl{font-size:14px;font-weight:700;margin-bottom:3px;}
+.card-sub{font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.5;}
+
+/* ── FIELDS ── */
+.fld{margin-bottom:13px;}
+.fld:last-child{margin-bottom:0;}
+.fld label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:2px;}
+.fld .hint{font-size:11px;color:var(--text3);margin-bottom:5px;line-height:1.4;}
+.fld input,.fld textarea,.fld select{
+  width:100%;background:var(--s2);border:1px solid var(--line);border-radius:var(--r2);
+  padding:9px 11px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);
+  outline:none;resize:none;transition:border-color .2s,box-shadow .2s;
+}
+.fld input:focus,.fld textarea:focus,.fld select:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px var(--aglow2);
+}
+.fld select{
+  appearance:none;cursor:pointer;padding-right:28px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.fld select option{background:var(--white);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ── PRODUCTS ── */
+.prod-row{display:flex;gap:7px;margin-bottom:8px;}
+.prods{display:flex;flex-wrap:wrap;gap:6px;}
+.ptag{
+  display:flex;align-items:center;gap:5px;
+  background:var(--aglow2);border:1px solid rgba(0,180,158,.2);
+  border-radius:20px;padding:4px 10px;font-size:12px;
+  color:var(--accent);font-weight:600;
+}
+.ptag button{background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;line-height:1;padding:0;}
+
+/* ── OPTION CARDS ── */
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px;margin-bottom:4px;}
+.oc{
+  border:1.5px solid var(--line);border-radius:var(--r2);padding:12px;
+  cursor:pointer;transition:all .2s;background:var(--white);position:relative;
+}
+.oc:hover{border-color:var(--accent);}
+.oc.sel{border-color:var(--accent);background:var(--aglow2);box-shadow:0 0 0 1px var(--accent);}
+.oc-ico{font-size:20px;margin-bottom:5px;}
+.oc-name{font-size:12px;font-weight:700;color:var(--text);}
+.oc-desc{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.3;}
+.rec{
+  position:absolute;top:6px;right:6px;
+  font-size:8px;letter-spacing:.5px;text-transform:uppercase;
+  background:var(--accent);color:white;padding:2px 5px;border-radius:3px;font-weight:700;
+}
+
+/* ── DURATION ── */
+.dur-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.dc{
+  border:1.5px solid var(--line);border-radius:var(--r2);padding:10px 6px;
+  cursor:pointer;transition:all .2s;text-align:center;background:var(--white);
+}
+.dc:hover{border-color:var(--accent);}
+.dc.sel{border-color:var(--accent);background:var(--aglow2);}
+.dc-t{font-size:14px;font-weight:800;color:var(--text);}
+.dc.sel .dc-t{color:var(--accent);}
+.dc-n{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.3;}
+
+/* ── TONE ── */
+.tone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.to{
+  border:1.5px solid var(--line);border-radius:var(--r2);padding:10px;
+  cursor:pointer;transition:all .2s;text-align:center;
+  font-size:12px;font-weight:600;color:var(--text2);background:var(--white);
+}
+.to:hover{border-color:var(--accent);color:var(--accent);}
+.to.sel{border-color:var(--accent);background:var(--aglow2);color:var(--accent);}
+.to small{display:block;font-weight:400;font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* ── ADVANCED ── */
+.adv-tog{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  font-size:12px;color:var(--text3);padding:8px 0;
+  user-select:none;transition:color .2s;
+}
+.adv-tog:hover{color:var(--accent);}
+.adv-arr{transition:transform .25s;font-size:10px;}
+.adv-tog.open .adv-arr{transform:rotate(180deg);}
+.adv-sec{display:none;border-top:1px solid var(--line);padding-top:14px;margin-top:4px;}
+.adv-sec.open{display:block;}
+
+/* ── BUTTONS ── */
+.btn-p{
+  padding:12px 26px;background:linear-gradient(135deg,var(--accent),var(--a2));
+  border:none;border-radius:var(--r2);font-family:'Outfit',sans-serif;
+  font-size:14px;font-weight:700;color:white;cursor:pointer;transition:all .2s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-p:hover:not(:disabled){filter:brightness(1.08);box-shadow:0 4px 20px var(--aglow);}
+.btn-p:disabled{opacity:.4;cursor:not-allowed;}
+.btn-s{
+  padding:12px 20px;background:var(--white);border:1.5px solid var(--line);
+  border-radius:var(--r2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;
+  color:var(--text2);cursor:pointer;transition:all .2s;
+}
+.btn-s:hover{border-color:var(--accent);color:var(--accent);}
+.btn-g{
+  padding:7px 13px;background:none;border:1px solid var(--line);border-radius:var(--r2);
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;
+  color:var(--text3);cursor:pointer;transition:all .2s;
+}
+.btn-g:hover{border-color:var(--accent);color:var(--accent);}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.save-bar{display:flex;gap:8px;align-items:center;margin-top:12px;}
+.save-ok{font-size:11px;color:var(--good);opacity:0;transition:opacity .3s;font-family:'JetBrains Mono',monospace;}
+.save-ok.on{opacity:1;}
+
+/* ── IDEA BOX ── */
+.idea-box{
+  width:100%;background:var(--s2);border:2px solid var(--line);border-radius:var(--r);
+  padding:14px 16px;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);
+  outline:none;resize:none;min-height:80px;line-height:1.6;
+  transition:border-color .2s,box-shadow .2s;margin-bottom:12px;
+}
+.idea-box:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--aglow2);}
+.idea-box::placeholder{color:var(--text3);}
+.gen-btn{
+  width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--a2));
+  border:none;border-radius:var(--r);font-family:'Outfit',sans-serif;
+  font-size:15px;font-weight:800;color:white;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.3px;
+}
+.gen-btn:hover:not(:disabled){filter:brightness(1.08);box-shadow:0 6px 28px var(--aglow);}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed;}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.gen-btn.ld .spin{display:block;}
+.gen-btn.ld .gbt{display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── PROGRESS ── */
+.prog-wrap{display:none;margin-top:14px;}
+.prog-wrap.on{display:block;}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:8px;}
+.prog-lbl{font-size:13px;font-weight:600;color:var(--text2);}
+.prog-eta{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.prog-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--a2));border-radius:3px;transition:width .9s ease;width:0%;}
+.prog-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.pc{
+  font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);
+  color:var(--text3);font-family:'JetBrains Mono',monospace;transition:all .3s;
+}
+.pc.on{border-color:var(--accent);color:var(--accent);background:var(--aglow2);}
+.pc.done{border-color:var(--good);color:var(--good);background:rgba(5,150,105,.06);}
+
+/* ── ERROR ── */
+.err-box{
+  display:none;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);
+  border-radius:var(--r2);padding:14px;margin-top:12px;font-size:13px;color:var(--bad);line-height:1.6;
+}
+.err-box.on{display:block;}
+
+/* ── OUTPUT ── */
+.out-area{margin-top:14px;display:none;}
+.out-area.on{display:block;}
+
+/* ── AUDIT ── */
+.audit{
+  background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;margin-bottom:14px;animation:fu .35s ease;
+}
+@keyframes fu{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.audit-hd{padding:11px 16px;background:var(--s2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+.audit-ttl{font-weight:700;font-size:13px;flex:1;}
+.vrd{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-weight:700;}
+.vrd.pass{background:rgba(5,150,105,.1);color:var(--good);border:1px solid rgba(5,150,105,.25);}
+.vrd.warn{background:rgba(180,83,9,.1);color:var(--warn);border:1px solid rgba(180,83,9,.25);}
+.vrd.fail{background:rgba(220,38,38,.1);color:var(--bad);border:1px solid rgba(220,38,38,.25);}
+.audit-bd{padding:13px 16px;font-size:12.5px;line-height:1.75;color:var(--text2);}
+.audit-bd strong{color:var(--text);}
+.audit-bd hr{border:none;border-top:1px solid var(--line);margin:10px 0;}
+.asec{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;font-family:'JetBrains Mono',monospace;}
+
+/* ── VARIATIONS ── */
+.var-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;}
+.var-ttl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.var-grid{display:grid;gap:14px;}
+
+/* ── VAR CARD ── */
+.vc{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;animation:fu .4s ease both;}
+.vc:nth-child(2){animation-delay:.07s;}
+.vc:nth-child(3){animation-delay:.14s;}
+.vc-hd{padding:10px 14px;background:var(--s2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;}
+.vc-num{font-size:11px;font-weight:800;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+.vc-tags{display:flex;gap:4px;flex:1;flex-wrap:wrap;}
+.vtag{font-size:9px;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:3px;background:var(--s3);color:var(--text3);border:1px solid var(--line);font-family:'JetBrains Mono',monospace;}
+.vtag.t{background:rgba(0,180,158,.07);color:var(--accent);border-color:rgba(0,180,158,.2);}
+.vc-acts{display:flex;gap:4px;}
+.vab{width:27px;height:27px;background:var(--s3);border:1px solid var(--line);border-radius:var(--r2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s;color:var(--text3);}
+.vab:hover{border-color:var(--accent);color:var(--accent);}
+.vab.cp{border-color:var(--good);color:var(--good);}
+.vc-body{padding:14px;}
+
+/* ── SCRIPT SECTIONS ── */
+.ss{margin-bottom:16px;}
+.ss:last-child{margin-bottom:0;}
+.ss-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line);}
+.ss-lbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+.ss-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.etags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px;}
+.etag{font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid var(--line);color:var(--text2);background:var(--s2);font-family:'JetBrains Mono',monospace;}
+.etag.tn{background:rgba(124,58,237,.05);color:var(--purple);border-color:rgba(124,58,237,.2);}
+.etag.vl{background:rgba(180,83,9,.05);color:var(--warn);border-color:rgba(180,83,9,.2);}
+.etag.en{background:rgba(5,150,105,.05);color:var(--good);border-color:rgba(5,150,105,.2);}
+.etag.bl{background:rgba(0,180,158,.05);color:var(--accent);border-color:rgba(0,180,158,.2);}
+.ss-txt{font-size:14px;line-height:1.85;color:var(--text);white-space:pre-wrap;}
+.ss-pause{font-size:11px;color:var(--text3);font-style:italic;margin:5px 0;font-family:'JetBrains Mono',monospace;}
+
+.vc-ft{padding:9px 14px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:var(--s2);}
+.wc{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.wc span{color:var(--text2);}
+
+/* ── INTEL ── */
+.intel{
+  background:linear-gradient(135deg,rgba(0,180,158,.06),rgba(0,212,184,.03));
+  border:1px solid rgba(0,180,158,.18);border-radius:var(--r);
+  padding:13px 16px;margin-top:14px;display:none;
+}
+.intel.on{display:block;animation:fu .35s ease;}
+.intel-hd{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.intel-ttl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'JetBrains Mono',monospace;font-weight:700;}
+.intel-bd{font-size:12.5px;line-height:1.72;color:var(--text2);}
+.intel-bd strong{color:var(--text);}
+
+/* ── CHANGE PANEL ── */
+.chg-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:14px;display:none;}
+.chg-card.on{display:block;animation:fu .3s ease;}
+.chg-hd{padding:11px 16px;background:var(--s2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;}
+.chg-ttl{font-weight:700;font-size:13px;flex:1;}
+.chg-badge{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:12px;background:rgba(180,83,9,.07);color:var(--warn);border:1px solid rgba(180,83,9,.2);font-family:'JetBrains Mono',monospace;}
+.chg-body{padding:14px;}
+.chg-hint{font-size:12px;color:var(--text3);margin-bottom:9px;line-height:1.6;}
+.chg-row{display:flex;gap:8px;}
+.chg-inp{flex:1;background:var(--s2);border:1px solid var(--line2);border-radius:var(--r2);padding:9px 11px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);outline:none;resize:none;min-height:44px;transition:border-color .2s;}
+.chg-inp:focus{border-color:var(--accent);}
+.chg-inp::placeholder{color:var(--text3);}
+.vdict{margin-top:11px;border-radius:var(--r2);overflow:hidden;display:none;}
+.vdict.on{display:block;animation:fu .3s ease;}
+.vd-hd{padding:8px 12px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;}
+.vd-hd.bt{background:rgba(5,150,105,.09);color:var(--good);}
+.vd-hd.nt{background:rgba(180,83,9,.09);color:var(--warn);}
+.vd-hd.ws{background:rgba(220,38,38,.09);color:var(--bad);}
+.vd-bd{padding:11px;background:var(--s2);font-size:12px;line-height:1.72;color:var(--text2);border:1px solid var(--line);border-top:none;border-radius:0 0 var(--r2) var(--r2);}
+.vd-bd strong{color:var(--text);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:18px;right:18px;z-index:999;background:var(--white);border:1px solid var(--line2);border-radius:var(--r2);padding:9px 14px;font-size:12px;color:var(--text);font-family:'JetBrains Mono',monospace;transform:translateY(60px);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 24px rgba(0,0,0,.1);}
+.toast.on{transform:translateY(0);opacity:1;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:680px){
+  .g2{grid-template-columns:1fr;}
+  .opt-grid{grid-template-columns:repeat(2,1fr);}
+  .dur-grid{grid-template-columns:repeat(3,1fr);}
+  .tone-grid{grid-template-columns:repeat(2,1fr);}
+  .steps-bar{display:none;}
+  .hdr{padding:0 14px;}
+  .content{padding:14px;}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="brand">Vizion <em>Forge</em></div>
+    <span class="brand-tag">Ad Creative Engine</span>
+  </div>
+  <div class="steps-bar">
+    <div class="si active" id="si0" onclick="goStep(0)"><div class="sn">1</div><span>Business Setup</span></div>
+    <div class="sdiv"></div>
+    <div class="si" id="si1" onclick="goStep(1)"><div class="sn">2</div><span>Ad Settings</span></div>
+    <div class="sdiv"></div>
+    <div class="si" id="si2" onclick="goStep(2)"><div class="sn">3</div><span>Generate</span></div>
+  </div>
+  <div class="hdr-right">Powered by Vizion Forge Engine</div>
+</header>
+
+<div class="content">
+
+<!-- ═══════════════ STEP 1 ═══════════════ -->
+<div class="panel active" id="p0">
+
+  <div class="card">
+    <div class="card-ttl">Your Business</div>
+    <div class="card-sub">This gets saved automatically. Fill it once and it stays here.</div>
+    <div class="g2">
+      <div class="fld">
+        <label>Business Name</label>
+        <div class="hint">Your company or brand name</div>
+        <input id="brand" placeholder="e.g. Sunrise Financial Group">
+      </div>
+      <div class="fld">
+        <label>Your Name &amp; Title</label>
+        <div class="hint">How you introduce yourself in videos</div>
+        <input id="personalName" placeholder="e.g. Sarah Johnson, Licensed Advisor">
+      </div>
+    </div>
+    <div class="fld">
+      <label>Products / Services</label>
+      <div class="hint">Add each product or service separately. You can choose which one you're advertising each time.</div>
+      <div class="prod-row">
+        <input id="newProd" placeholder="e.g. Final Expense Life Insurance" onkeydown="if(event.key==='Enter'){addProd();event.preventDefault();}">
+        <button class="btn-g" onclick="addProd()">+ Add</button>
+      </div>
+      <div class="prods" id="prodList"></div>
+    </div>
+    <div class="fld">
+      <label>Who You Help</label>
+      <div class="hint">The type of person who is your best customer</div>
+      <textarea id="audience" rows="2" placeholder="e.g. Adults over 55 on a fixed income who want to protect their family from unexpected costs"></textarea>
+    </div>
+    <div class="g2">
+      <div class="fld">
+        <label>The Problem You Solve</label>
+        <div class="hint">The main pain your customer has before finding you</div>
+        <input id="pain" placeholder="e.g. Worried about leaving debt or expenses behind for family">
+      </div>
+      <div class="fld">
+        <label>The Result You Deliver</label>
+        <div class="hint">What life looks like after working with you</div>
+        <input id="result" placeholder="e.g. Full coverage from day one, peace of mind for the whole family">
+      </div>
+    </div>
+    <div class="g2">
+      <div class="fld">
+        <label>Price Range</label>
+        <div class="hint">Approximate monthly cost or starting price</div>
+        <input id="price" placeholder="e.g. Starting from $30/month">
+      </div>
+      <div class="fld">
+        <label>What They've Already Tried</label>
+        <div class="hint">Things your ideal customer tried before that didn't work</div>
+        <input id="tried" placeholder="e.g. Got denied before, old policy lapsed, assumed they couldn't qualify">
+      </div>
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <button class="btn-g" onclick="saveProfile()">💾 Save Profile</button>
+    <span class="save-ok" id="saveOk">✓ Saved</span>
+  </div>
+
+  <div class="nav-row" style="margin-top:14px;">
+    <div></div>
+    <button class="btn-p" onclick="goStep(1)">Continue to Ad Settings →</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════ STEP 2 ═══════════════ -->
+<div class="panel" id="p1">
+
+  <div class="card">
+    <div class="card-ttl">Where are you advertising?</div>
+    <div class="card-sub">The script format, word limits, and rules all change based on the platform you choose.</div>
+    <div class="opt-grid" id="platGrid">
+      <div class="oc sel" data-v="facebook" onclick="selOpt(this,'plat')">
+        <div class="rec">★ Recommended</div>
+        <div class="oc-ico">📱</div>
+        <div class="oc-name">Facebook / Instagram</div>
+        <div class="oc-desc">Best for cold audiences and lead generation</div>
+      </div>
+      <div class="oc" data-v="google" onclick="selOpt(this,'plat')">
+        <div class="oc-ico">🔍</div>
+        <div class="oc-name">Google Ads</div>
+        <div class="oc-desc">Best for intent-based search traffic</div>
+      </div>
+      <div class="oc" data-v="linkedin" onclick="selOpt(this,'plat')">
+        <div class="oc-ico">💼</div>
+        <div class="oc-name">LinkedIn</div>
+        <div class="oc-desc">Best for B2B and professional services</div>
+      </div>
+      <div class="oc" data-v="youtube" onclick="selOpt(this,'plat')">
+        <div class="oc-ico">▶️</div>
+        <div class="oc-name">YouTube</div>
+        <div class="oc-desc">Best for awareness and complex offers</div>
+      </div>
+      <div class="oc" data-v="tiktok" onclick="selOpt(this,'plat')">
+        <div class="oc-ico">🎵</div>
+        <div class="oc-name">TikTok</div>
+        <div class="oc-desc">Best for younger audiences and fast reach</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl">What type of ad?</div>
+    <div class="card-sub">Video scripts include full emotion and direction tags so anyone can record them without a coach.</div>
+    <div class="opt-grid" id="fmtGrid">
+      <div class="oc sel" data-v="video" onclick="selOpt(this,'fmt')">
+        <div class="rec">★ Recommended</div>
+        <div class="oc-ico">🎬</div>
+        <div class="oc-name">Video Script</div>
+        <div class="oc-desc">Full directing script with emotion tags and timing cues</div>
+      </div>
+      <div class="oc" data-v="written" onclick="selOpt(this,'fmt')">
+        <div class="oc-ico">📝</div>
+        <div class="oc-name">Written Ad</div>
+        <div class="oc-desc">Full copy, headline, description, and CTA text</div>
+      </div>
+      <div class="oc" data-v="both" onclick="selOpt(this,'fmt')">
+        <div class="oc-ico">🔀</div>
+        <div class="oc-name">Both</div>
+        <div class="oc-desc">Video script and written ad for the same offer</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="durCard">
+    <div class="card-ttl">How long is your ad?</div>
+    <div class="card-sub">Word count is calibrated to natural speaking pace — 90 to 110 words per minute. A 60 second ad is roughly 100 words, not 185.</div>
+    <div class="dur-grid">
+      <div class="dc" data-v="15" onclick="selectDur(this)">
+        <div class="dc-t">15s</div>
+        <div class="dc-n">Hook only. Retargeting.</div>
+      </div>
+      <div class="dc" data-v="30" onclick="selectDur(this)">
+        <div class="dc-t">30s</div>
+        <div class="dc-n">Hook + Solution + CTA.</div>
+      </div>
+      <div class="dc sel" data-v="60" onclick="selectDur(this)">
+        <div class="dc-t">60s ★</div>
+        <div class="dc-n">Full script. Cold traffic.</div>
+      </div>
+      <div class="dc" data-v="90" onclick="selectDur(this)">
+        <div class="dc-t">90s</div>
+        <div class="dc-n">Extended. Complex offers.</div>
+      </div>
+      <div class="dc" data-v="120" onclick="selectDur(this)">
+        <div class="dc-t">2 min</div>
+        <div class="dc-n">Story format. Max for Facebook.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl">What tone should the ad use?</div>
+    <div class="card-sub">This sets the emotion, energy, and language style for the entire script.</div>
+    <div class="tone-grid">
+      <div class="to" data-v="Empathetic" onclick="selTone(this)">🤝 Empathetic<small>Warm, understanding, trust-building</small></div>
+      <div class="to sel" data-v="Conversational" onclick="selTone(this)">💬 Conversational ★<small>Natural, human, like talking to a friend</small></div>
+      <div class="to" data-v="Professional" onclick="selTone(this)">💼 Professional<small>Credible, authoritative, polished</small></div>
+      <div class="to" data-v="Bold" onclick="selTone(this)">💪 Bold<small>Direct, confident, no fluff</small></div>
+      <div class="to" data-v="Urgent" onclick="selTone(this)">🔥 Urgent<small>Time-sensitive, action-driven</small></div>
+      <div class="to" data-v="Aggressive" onclick="selTone(this)">⚡ Aggressive<small>High energy, pattern-interrupt</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl">What industry are you in?</div>
+    <div class="card-sub">This sets the compliance rules and copy behavior specific to your industry. Every niche has different rules.</div>
+    <div class="fld">
+      <select id="niche" onchange="handleNiche()">
+        <option value="life_insurance">Life Insurance</option>
+        <option value="health_insurance">Health Insurance</option>
+        <option value="auto_insurance">Auto Insurance</option>
+        <option value="home_insurance">Home Insurance</option>
+        <option value="financial_services">Financial Services</option>
+        <option value="mortgage_lending">Mortgage &amp; Lending</option>
+        <option value="real_estate">Real Estate</option>
+        <option value="legal_services">Legal Services</option>
+        <option value="home_services">Home Services (Roofing, Plumbing, HVAC)</option>
+        <option value="medical_dental">Medical &amp; Dental</option>
+        <option value="coaching_courses">Coaching &amp; Courses</option>
+        <option value="marketing_agency">Marketing Agency</option>
+        <option value="saas_software">SaaS &amp; Software</option>
+        <option value="ecommerce">Ecommerce</option>
+        <option value="automotive">Automotive</option>
+        <option value="b2b_services">B2B Services</option>
+        <option value="restaurants_food">Restaurants &amp; Food</option>
+        <option value="other">Other — I'll describe it below</option>
+      </select>
+    </div>
+    <div id="customNicheWrap" style="display:none;">
+      <div class="fld">
+        <label>Describe your industry</label>
+        <input id="customNiche" placeholder="e.g. Solar Energy, Staffing Agency, Pet Grooming...">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="adv-tog" id="advTog" onclick="toggleAdv()">
+      <span class="adv-arr">▼</span>
+      <span>Advanced Settings</span>
+      <span style="font-size:10px;margin-left:4px;color:var(--text3);">Optional — for power users who want more control</span>
+    </div>
+    <div class="adv-sec" id="advSec">
+      <div class="g2">
+        <div class="fld">
+          <label>Specific Person You're Targeting</label>
+          <div class="hint">One exact type of person this ad is written for</div>
+          <input id="persona" placeholder="e.g. 65-year-old retired teacher living on Social Security">
+        </div>
+        <div class="fld">
+          <label>The Moment That Makes It Urgent</label>
+          <div class="hint">The specific life event when they realize they need this</div>
+          <input id="trigger" placeholder="e.g. Just attended a friend's funeral and saw the family struggle to pay">
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fld">
+          <label>How It Works — One Sentence</label>
+          <div class="hint">The simplest explanation of what makes your solution work</div>
+          <input id="mechanism" placeholder="e.g. Just 3 health questions, no medical exam, decision same day">
+        </div>
+        <div class="fld">
+          <label>What You Want Them To Do After Watching</label>
+          <div class="hint">The exact action step after the ad</div>
+          <input id="ctaObj" placeholder="e.g. Answer 3 questions to see if they still qualify at their age">
+        </div>
+      </div>
+      <div class="fld">
+        <label>What Your Customers Actually Say</label>
+        <div class="hint">Real quotes from real customers about their problem or your result. Exact words if possible.</div>
+        <textarea id="voc" rows="3" placeholder="e.g. I didn't want my kids to have to pass a hat around when I'm gone / I thought I was too old or too sick to qualify for anything"></textarea>
+      </div>
+      <div class="g2">
+        <div class="fld">
+          <label>Reasons People Say No</label>
+          <div class="hint">Common objections or why someone might not be a good fit</div>
+          <textarea id="objections" rows="2" placeholder="e.g. Too expensive / Already have some coverage / Pre-existing conditions"></textarea>
+        </div>
+        <div class="fld">
+          <label>Results You Can Prove</label>
+          <div class="hint">Real numbers, approvals, testimonials, or case study results you can reference</div>
+          <textarea id="proof" rows="2" placeholder="e.g. Coverage up to $20,000 / No medical exam required / Approvals within 24 hours / Ages 50–85 accepted"></textarea>
+        </div>
+      </div>
+      <div class="fld">
+        <label>Ads That Have Worked Before</label>
+        <div class="hint">Paste hooks or angles from previous ads that performed well — the engine will learn from them</div>
+        <textarea id="winners" rows="2" placeholder="e.g. The timing-trigger angle performed well / The identity angle 'I refuse to be a burden' got the most engagement"></textarea>
+      </div>
+      <div class="fld">
+        <label>Lead Priority</label>
+        <select id="priority">
+          <option value="quality">★ Quality First — fewer leads but much better fit</option>
+          <option value="balanced">Balanced — good mix of quality and volume</option>
+          <option value="volume">Volume — maximum reach and clicks</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-s" onclick="goStep(0)">← Back</button>
+    <button class="btn-p" onclick="goStep(2)">Continue to Generate →</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════ STEP 3 ═══════════════ -->
+<div class="panel" id="p2">
+
+  <div class="card">
+    <div class="card-ttl">What do you want to advertise?</div>
+    <div class="card-sub">Describe your idea in your own words. Even rough or vague is fine — the engine validates your offer before writing anything.</div>
+
+    <div id="prodSelWrap" style="display:none;margin-bottom:12px;">
+      <div class="fld">
+        <label>Which product or service is this ad for?</label>
+        <select id="prodSel"></select>
+      </div>
+    </div>
+
+    <textarea class="idea-box" id="idea" rows="3"
+      placeholder="e.g. I want to run a Facebook video ad for people over 55 who are worried about leaving funeral costs for their family..."></textarea>
+
+    <button class="gen-btn" id="genBtn" onclick="doGen()">
+      <div class="spin"></div>
+      <span class="gbt">⚡ Generate Ad Creative</span>
+    </button>
+
+    <div class="prog-wrap" id="progWrap">
+      <div class="prog-top">
+        <span class="prog-lbl" id="progLbl">Analyzing your offer...</span>
+        <span class="prog-eta">Usually 30–45 seconds</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-chips">
+        <div class="pc" id="pc0">Analyzing offer</div>
+        <div class="pc" id="pc1">Researching audience</div>
+        <div class="pc" id="pc2">Checking compliance</div>
+        <div class="pc" id="pc3">Writing script</div>
+        <div class="pc" id="pc4">Adding emotions</div>
+        <div class="pc" id="pc5">Finalizing</div>
+      </div>
+    </div>
+
+    <div class="err-box" id="errBox">
+      <strong>Something went wrong.</strong><br>
+      <span id="errMsg">Please check your connection and try again.</span>
+    </div>
+  </div>
+
+  <div class="out-area" id="outArea">
+
+    <div class="audit" id="auditCard">
+      <div class="audit-hd">
+        <span id="aIco">🔍</span>
+        <span class="audit-ttl" id="aTtl">Strategic Offer Audit</span>
+        <span class="vrd" id="aVrd">ANALYZING</span>
+      </div>
+      <div class="audit-bd" id="aBd"></div>
+    </div>
+
+    <div id="varSec">
+      <div class="var-hdr">
+        <div class="var-ttl" id="varTtl">Ad Creative</div>
+        <button class="btn-g" onclick="doGen()">↺ Regenerate All</button>
+      </div>
+      <div class="var-grid" id="varGrid"></div>
+    </div>
+
+    <div class="intel" id="intelCard">
+      <div class="intel-hd"><span>💡</span><div class="intel-ttl">Offer Intelligence Note</div></div>
+      <div class="intel-bd" id="intelBd"></div>
+    </div>
+
+    <div class="chg-card" id="chgCard">
+      <div class="chg-hd">
+        <span>🔄</span>
+        <span class="chg-ttl">Request a Change</span>
+        <span class="chg-badge">Smart Evaluation</span>
+      </div>
+      <div class="chg-body">
+        <p class="chg-hint">Describe what you want changed. The engine evaluates whether it will actually improve results first — not just apply it because you asked.</p>
+        <div class="chg-row">
+          <textarea class="chg-inp" id="chgInp" rows="2" placeholder="e.g. Make the hook more direct / Change to an empathetic tone / Focus on a different pain point..."></textarea>
+          <button class="btn-g" id="evalBtn" onclick="doEval()" style="white-space:nowrap;align-self:flex-start;padding:9px 14px;">🔬 Evaluate</button>
+        </div>
+        <div class="vdict" id="vdict">
+          <div class="vd-hd" id="vdHd"></div>
+          <div class="vd-bd" id="vdBd"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-row" style="margin-top:10px;">
+    <button class="btn-s" onclick="goStep(1)">← Ad Settings</button>
+    <button class="btn-g" onclick="saveProfile()">💾 Save Profile</button>
+  </div>
+
+</div>
+
+</div><!-- /content -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG — HIDDEN FROM CLIENTS
+// ═══════════════════════════════════════════
+const PROXY = 'https://vizion-ad-ai-proxy.tight-meadow-28ae.workers.dev';
+
+// ═══════════════════════════════════════════
+// NICHE RULES — ALL 18 NICHES
+// ═══════════════════════════════════════════
+const NR = {
+  life_insurance:{
+    label:'Life Insurance',
+    good:['Use situational phrasing not personal-attribute claims','Qualify leads before the click','Keep approval language conditional','Tie urgency to real life events like a funeral or health scare','Focus on protecting family not product features','Use identity language — I refuse to be a burden on my family'],
+    risk:['Never say guaranteed approval','Never say government program or state benefit','Never imply the platform knows viewer has a health condition','Never overpromise underwriting outcomes','No bait pricing','No fake urgency timers'],
+    prefer:['after a recent checkup','if one premium changed','one condition managed and stable','may still qualify','designed for people 50 to 85','no medical exam','just three health questions'],
+    avoid:['guaranteed approval','government benefit','free coverage','everyone qualifies','instant approval'],
+    bestPlatform:'Facebook',bestTone:'Empathetic',
+    copy:'Lead with identity and family protection. Never lead with product features. Use timing triggers based on life events. Qualification language must be woven naturally into the copy. CTA should have medium friction — not just click here but answer a few questions to see if you qualify. One message: protect your family when you are gone.'
+  },
+  health_insurance:{
+    label:'Health Insurance',
+    good:['Focus on access and affordability','Use enrollment timing when relevant','Qualify by employment status or life situation','Tie to specific life events like job change or turning 26'],
+    risk:['Never make specific coverage guarantees','No guaranteed premium claims','Avoid misleading comparisons to employer plans'],
+    prefer:['may qualify for reduced premiums','based on your household income','during open enrollment','see your options at no cost'],
+    avoid:['free healthcare','guaranteed coverage','everyone qualifies'],
+    bestPlatform:'Facebook',bestTone:'Conversational',
+    copy:'Focus on the confusion of health insurance and position as the guide who simplifies it. Timing triggers around life events are powerful. Filter by situation: self-employed, between jobs, family coverage needed.'
+  },
+  auto_insurance:{
+    label:'Auto Insurance',
+    good:['Lead with savings angle','Use rate comparison language','Qualify by state or vehicle type','Create urgency around renewal date or recent rate increase'],
+    risk:['No guaranteed lowest rate claims','No misleading coverage comparisons','No fake countdown timers'],
+    prefer:['drivers in your state are saving','at your next renewal','compare your current rate in 2 minutes','based on your driving record'],
+    avoid:['cheapest insurance guaranteed','everyone saves','lowest rates always'],
+    bestPlatform:'Facebook',bestTone:'Bold',
+    copy:'Price comparison is the dominant angle. Hook should challenge their current rate. CTA should be low friction — see your rate in 2 minutes. Filter by state or recent rate change.'
+  },
+  home_insurance:{
+    label:'Home Insurance',
+    good:['Lead with protection and peace of mind','Use property value or replacement cost angle','Tie to recent home purchase or upcoming renewal','Qualify by homeowner status'],
+    risk:['No guaranteed coverage for all events','No misleading exclusion language','No specific payout guarantees without documentation'],
+    prefer:['homeowners in your area','at your next renewal','based on your home value','may qualify for better coverage'],
+    avoid:['covers everything','cheapest home insurance','guaranteed full replacement'],
+    bestPlatform:'Facebook',bestTone:'Professional',
+    copy:'Trust and stability are the dominant emotions. Homeowners want to feel protected and not overpaying. Hook should address the fear of being underinsured. CTA should invite a free review or quote comparison.'
+  },
+  financial_services:{
+    label:'Financial Services',
+    good:['Use specificity and realism','Focus on fit not hype','Tie urgency to a real financial event or life stage','Qualify by income level or situation'],
+    risk:['Never guarantee returns or specific savings','No misleading financial projections','Avoid free money language','SEC and FINRA compliance for investment products'],
+    prefer:['may qualify','based on your financial situation','compare your options','subject to eligibility','for people in this income range'],
+    avoid:['guaranteed returns','double your money','risk free','free money from the government'],
+    bestPlatform:'Facebook',bestTone:'Professional',
+    copy:'Credibility and specificity are everything. Vague financial claims destroy trust immediately. Hook should address a specific financial fear or goal. Qualification language must set realistic expectations before the click.'
+  },
+  mortgage_lending:{
+    label:'Mortgage & Lending',
+    good:['Lead with rate or payment savings','Qualify by credit range or home value','Use refinance timing triggers','Tie to equity or life events'],
+    risk:['No guaranteed rate quotes in ads','Truth in lending compliance required','No misleading APR comparisons','No discriminatory targeting language'],
+    prefer:['homeowners with good equity','if your current rate is above X','may qualify for lower monthly payments','based on your credit profile'],
+    avoid:['guaranteed lowest rate','everyone qualifies','free money from your home'],
+    bestPlatform:'Facebook',bestTone:'Professional',
+    copy:'Numbers and specificity build trust. A specific rate range or monthly savings estimate outperforms vague benefit claims. Hook should challenge their current rate. Filter by equity level or credit range.'
+  },
+  real_estate:{
+    label:'Real Estate',
+    good:['Tie to local market conditions','Qualify by geography and life situation','Use urgency tied to market timing','Lead with specific outcome for buyer or seller'],
+    risk:['Fair housing act compliance — no discriminatory language','No guaranteed sale price or timeline','Avoid specific market predictions'],
+    prefer:['homes in your neighborhood','sellers in this current market','buyers looking in this area','based on what homes are doing right now'],
+    avoid:['guaranteed sale','sell in 24 hours','top dollar guaranteed','best agent in town'],
+    bestPlatform:'Facebook',bestTone:'Conversational',
+    copy:'Local specificity is the strongest angle. Generic real estate ads perform poorly. The hook should feel written for one specific neighborhood or life situation. Filter by location intent and life stage like first-time buyer or downsizing.'
+  },
+  legal_services:{
+    label:'Legal Services',
+    good:['Tie urgency to event timing like statute of limitations or recent accident','Qualify by case type and situation','Use empathy before authority','Lead with the specific outcome they want'],
+    risk:['No guaranteed case outcomes','No specific settlement amounts unless fully documented','Attorney-client relationship disclaimers where required','No misleading win rate claims'],
+    prefer:['if you were in an accident in the last X days','you may be entitled to compensation','see if you qualify for a free consultation','based on what happened to you'],
+    avoid:['guaranteed win','we always win','millions recovered guaranteed','best lawyers in town'],
+    bestPlatform:'Facebook',bestTone:'Empathetic',
+    copy:'Empathy first authority second. The person is usually scared or overwhelmed. The hook should show you understand their exact situation. Filter hard by case type and event timing — not every viewer is a qualified lead.'
+  },
+  home_services:{
+    label:'Home Services',
+    good:['Lead with the specific problem and what happens if it is not fixed','Qualify by geography and homeowner status','Use seasonal or weather timing triggers','Use local social proof references'],
+    risk:['No vague service guarantees','Be specific about your service area','Avoid bait and switch pricing'],
+    prefer:['homeowners in your area','before the next storm season','licensed and insured in your state','free inspection for homeowners nearby'],
+    avoid:['cheapest in town','guaranteed best price','we beat any quote'],
+    bestPlatform:'Facebook',bestTone:'Bold',
+    copy:'Consequence of inaction is the hook. Show what happens if the problem is ignored — water damage, roof collapse, system failure. Local specificity is critical. CTA should be low friction like free inspection or free quote.'
+  },
+  medical_dental:{
+    label:'Medical & Dental',
+    good:['Lead with the symptom or daily struggle not the treatment name','Qualify by insurance type or specific situation','Use before and after life outcomes not clinical procedures','Tie to a specific pain point or life event'],
+    risk:['No guaranteed medical outcomes','No specific diagnosis language in ads','HIPAA awareness required','FDA claim restrictions for treatments and devices'],
+    prefer:['patients who have tried other options without success','if you have been dealing with this for more than X months','may be a good candidate for a consultation','schedule a free consultation to find out if this is right for you'],
+    avoid:['guaranteed results','cures','FDA approved treatment for'],
+    bestPlatform:'Facebook',bestTone:'Empathetic',
+    copy:'Lead with the human daily experience of the condition not the clinical solution. People respond to feeling understood before they respond to a treatment. Hook should mirror their exact daily frustration. High qualification bar — filter by symptom duration and insurance type.'
+  },
+  coaching_courses:{
+    label:'Coaching & Courses',
+    good:['Lead with the transformation not the curriculum or modules','Qualify by current situation and desired outcome','Use identity language — who they want to become','Tie urgency to a specific cohort start or enrollment window'],
+    risk:['No income guarantee claims without full FTC disclosure','No misleading before and after comparisons','Be careful with lifestyle imagery implying guaranteed results'],
+    prefer:['for people who are already doing X and want to get to Y','if you have been stuck at this level for more than a year','designed for people who are serious about','this is not for beginners — it is for people who already have X'],
+    avoid:['guaranteed income','six figures in 30 days','get rich quick','passive income with no work'],
+    bestPlatform:'Facebook',bestTone:'Bold',
+    copy:'Identity transformation is the core. The person is not buying a course — they are buying a version of themselves. The hook should challenge their current identity or situation. High qualification language filters out browsers and attracts committed buyers.'
+  },
+  marketing_agency:{
+    label:'Marketing Agency',
+    good:['Lead with a specific client result or case study angle','Qualify by business size and monthly revenue','Use economics — cost per lead, return on ad spend, revenue generated','Focus on one specific service or outcome per ad'],
+    risk:['No guaranteed results without documented proof','No misleading client case studies or fabricated numbers','Avoid vague scaling language that means nothing'],
+    prefer:['for businesses doing between X and Y per month','we helped a specific type of business generate X qualified leads','if your current cost per lead is above X'],
+    avoid:['scale your business guaranteed','10x your revenue','best agency in town','we do everything'],
+    bestPlatform:'Facebook',bestTone:'Professional',
+    copy:'Specificity is everything for agency ads. Vague promises are instantly disqualifying to smart buyers. The hook should contain a specific number or result. Target by business type and revenue range. CTA should invite a strategy call not a generic contact form.'
+  },
+  saas_software:{
+    label:'SaaS & Software',
+    good:['Lead with the workflow problem not the feature list','Show the before and after workflow clearly','Qualify by job role, company size, or existing tech stack','Use specific time saved or money saved numbers'],
+    risk:['No vague AI magic claims that cannot be proven','No misleading automation promises','Avoid ten times productivity without specific proof'],
+    prefer:['for teams who are still using spreadsheets for this','if you spend more than X hours per week on this task','replaces the manual process of','connects directly with the tools you already use'],
+    avoid:['AI does everything','no more manual work ever','ten times your productivity guaranteed'],
+    bestPlatform:'LinkedIn',bestTone:'Conversational',
+    copy:'The workflow pain is the hook. Show the exact frustrating moment the software eliminates. Decision makers respond to ROI and time savings with real numbers. Filter by company size, role, and existing workflow problem. CTA should be free trial or demo.'
+  },
+  ecommerce:{
+    label:'Ecommerce',
+    good:['Lead with the desire or aspiration the product fulfills','Use social proof and specific customer numbers','Create urgency with inventory or time limits that are truthful','Show the product solving a real problem or fulfilling a real desire'],
+    risk:['No fake countdown timers or false scarcity','No misleading before and after','Authentic reviews only — no fabricated testimonials','Accurate shipping time and availability claims'],
+    prefer:['join over X customers who have','limited stock remaining','ships within 24 hours','as seen by X people this week'],
+    avoid:['cheapest online','guaranteed to change your life','miracle product'],
+    bestPlatform:'Facebook',bestTone:'Bold',
+    copy:'Desire and social proof drive ecommerce conversions. The hook should show the product solving a real specific problem or fulfilling a real craving. User generated content style consistently outperforms polished studio ads. CTA should be low friction — shop now or get yours today.'
+  },
+  automotive:{
+    label:'Automotive',
+    good:['Lead with lifestyle or identity for vehicle purchases, savings for service','Qualify by location and current vehicle ownership','Use trade-in or financing angle for dealerships','Use seasonal and maintenance timing triggers for service'],
+    risk:['No bait pricing that differs at dealership','Accurate financing terms required in ads','No misleading fuel economy claims'],
+    prefer:['drivers in your area','at your next service appointment','based on your current vehicle','your trade-in value may surprise you'],
+    avoid:['cheapest cars anywhere','guaranteed financing for everyone','best deal you will ever find'],
+    bestPlatform:'Facebook',bestTone:'Bold',
+    copy:'Identity drives vehicle purchases. Savings drives service decisions. Dealership ads should lead with a specific vehicle or financing angle. Service ads should use consequence of delay — what happens if you ignore this service. Local targeting is critical.'
+  },
+  b2b_services:{
+    label:'B2B Services',
+    good:['Lead with a specific business problem or its financial cost','Qualify by company size, decision maker role, and industry','Use ROI and efficiency language throughout','Write in decision maker vocabulary not employee vocabulary'],
+    risk:['No vague growth promises that cannot be backed up','No unverifiable ROI claims','Avoid corporate jargon that means nothing to a real person'],
+    prefer:['for operations teams at companies doing X in annual revenue','reduces cost per acquisition by a measurable amount','eliminates the manual process that costs you X hours per week','for directors who are tired of X problem'],
+    avoid:['grow your business fast','scale to the next level','best B2B solution available'],
+    bestPlatform:'LinkedIn',bestTone:'Professional',
+    copy:'The specific business pain with its economic consequence is the entry point. Decision makers have zero patience for vague value propositions. Lead with the exact problem and what it costs to not solve it. Filter hard by role and company size. LinkedIn consistently outperforms Facebook for true B2B.'
+  },
+  restaurants_food:{
+    label:'Restaurants & Food',
+    good:['Lead with the sensory experience or specific craving','Use local community language and neighborhood feel','Use timing triggers around meal times and special occasions','Highlight one unique menu item or experience per ad'],
+    risk:['Accurate pricing and item availability','No misleading health claims about food','Allergen awareness and accuracy'],
+    prefer:['right here in your neighborhood','this weekend only','voted best in the area','made fresh every single day'],
+    avoid:['healthiest food ever made','guaranteed you will love it','cheapest restaurant anywhere'],
+    bestPlatform:'Facebook',bestTone:'Conversational',
+    copy:'Sensory language and vivid description drive restaurant ads. Make people hungry with words. Lead with the experience — a specific dish, a specific occasion, a craving they recognize. Local community language consistently outperforms generic food photography copy. CTA should be reserve a table, order online, or come in this weekend.'
+  },
+  other:{
+    label:'Custom Industry',
+    good:['Write with specificity and one clear message per ad','Qualify the right customer before they click','Use timing triggers and identity language','Focus on the outcome not the features'],
+    risk:['Avoid vague benefit claims that cannot be proven','No unverifiable guarantees','Follow all platform content policies'],
+    prefer:['specific to your situation','designed for people who already have X','may be the right fit if you are dealing with Y'],
+    avoid:['best in the world','guaranteed results','everyone needs this'],
+    bestPlatform:'Facebook',bestTone:'Conversational',
+    copy:'Research the specific industry before writing and apply the most relevant compliance and copy principles. Default approach: one clear problem the audience recognizes, one clear solution mechanism, one clear CTA with medium-friction qualification language. Never write a generic ad for an unknown niche — always research first.'
+  }
+};
+
+const WC = {
+  '15':{min:22,max:28},
+  '30':{min:45,max:55},
+  '60':{min:90,max:110},
+  '90':{min:135,max:160},
+  '120':{min:180,max:220}
+};
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let products=[], selPlat='facebook', selFmt='video', selectedDur='60', selectedTone='Conversational';
+let lastResp='', lastVars=[], lastCtx='';
+let progInt=null;
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  loadProfile();
+  updateProdSel();
+});
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goStep(n){
+  ['p0','p1','p2'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===n));
+  ['si0','si1','si2'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    if(i===n)el.classList.add('active');
+  });
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════
+// SELECTORS
+// ═══════════════════════════════════════════
+function selOpt(el,type){
+  el.closest('.opt-grid').querySelectorAll('.oc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  if(type==='plat'){
+    selPlat=el.dataset.v;
+    document.getElementById('durCard').style.display=selPlat==='google'?'none':'block';
+  }
+  if(type==='fmt') selFmt=el.dataset.v;
+}
+function selectDur(el){
+  document.querySelectorAll('.dc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedDur=el.dataset.v;
+}
+function selTone(el){
+  document.querySelectorAll('.to').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedTone=el.dataset.v;
+}
+function toggleAdv(){
+  const tog=document.getElementById('advTog');
+  const sec=document.getElementById('advSec');
+  tog.classList.toggle('open');
+  sec.classList.toggle('open');
+}
+function handleNiche(){
+  document.getElementById('customNicheWrap').style.display=gv('niche')==='other'?'block':'none';
+}
+
+// ═══════════════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════════════
+function addProd(){
+  const inp=document.getElementById('newProd');
+  const v=inp.value.trim();
+  if(!v)return;
+  if(products.includes(v)){toast('Already added');return;}
+  products.push(v);
+  inp.value='';
+  renderProds();
+  updateProdSel();
+}
+function removeProd(i){
+  products.splice(i,1);
+  renderProds();
+  updateProdSel();
+}
+function renderProds(){
+  document.getElementById('prodList').innerHTML=
+    products.map((p,i)=>`<div class="ptag">${eh(p)}<button onclick="removeProd(${i})">×</button></div>`).join('');
+}
+function updateProdSel(){
+  const wrap=document.getElementById('prodSelWrap');
+  const sel=document.getElementById('prodSel');
+  if(products.length>1){
+    wrap.style.display='block';
+    sel.innerHTML=products.map((p,i)=>`<option value="${i}">${eh(p)}</option>`).join('');
+  } else {
+    wrap.style.display='none';
+  }
+}
+
+// ═══════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════
+function saveProfile(){
+  const d={
+    brand:gv('brand'),personalName:gv('personalName'),products,
+    audience:gv('audience'),pain:gv('pain'),result:gv('result'),
+    price:gv('price'),tried:gv('tried'),niche:gv('niche'),customNiche:gv('customNiche'),
+    persona:gv('persona'),trigger:gv('trigger'),mechanism:gv('mechanism'),ctaObj:gv('ctaObj'),
+    voc:gv('voc'),objections:gv('objections'),proof:gv('proof'),winners:gv('winners'),
+    priority:gv('priority'),plat:selPlat,fmt:selFmt,dur:selectedDur,tone:selectedTone
+  };
+  localStorage.setItem('vf_v4',JSON.stringify(d));
+  const ok=document.getElementById('saveOk');
+  ok.classList.add('on');
+  setTimeout(()=>ok.classList.remove('on'),2500);
+  toast('✓ Profile saved');
+}
+function loadProfile(){
+  const raw=localStorage.getItem('vf_v4');
+  if(!raw)return;
+  try{
+    const d=JSON.parse(raw);
+    ['brand','personalName','audience','pain','result','price','tried',
+     'niche','customNiche','persona','trigger','mechanism','ctaObj',
+     'voc','objections','proof','winners','priority'].forEach(k=>{
+      if(d[k]&&document.getElementById(k))document.getElementById(k).value=d[k];
+    });
+    if(d.products){products=d.products;renderProds();updateProdSel();}
+    if(d.niche)handleNiche();
+    if(d.plat){selPlat=d.plat;document.querySelectorAll('#platGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.plat));}
+    if(d.fmt){selFmt=d.fmt;document.querySelectorAll('#fmtGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.fmt));}
+    if(d.dur){selectedDur=d.dur;document.querySelectorAll('.dc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.dur));}
+    if(d.tone){selectedTone=d.tone;document.querySelectorAll('.to').forEach(t=>t.classList.toggle('sel',t.dataset.v===d.tone));}
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+// SYSTEM PROMPT
+// ═══════════════════════════════════════════
+function buildSys(){
+  const nKey=gv('niche');
+  const n=NR[nKey]||NR.other;
+  const nLabel=nKey==='other'?(gv('customNiche')||'Custom Industry'):n.label;
+  const wc=WC[selectedDur]||WC['60'];
+  const pri=gv('priority')||'quality';
+
+  const leadDef={
+    quality:'Quality-first: narrow the audience identification, use strong self-disqualification language woven naturally into the copy, CTA with medium-to-high friction, minimal broad curiosity bait, more expectation-setting before the click, specific qualification criteria stated clearly',
+    balanced:'Balanced: moderate qualification language that filters obvious non-fits, CTA invites a specific type of person, broad enough for decent volume but specific enough to filter tire-kickers',
+    volume:'Volume: broader appeal hook, low CTA friction, curiosity-driven opening, wider audience signals, maximize clicks from interested viewers while maintaining basic niche relevance'
+  };
+
+  const platFmt={
+    facebook: selFmt==='video'?
+`VIDEO SCRIPT — use this exact section structure:
+[HOOK — 0 to 5 seconds]
+[EMOTION: tone quality, energy level, body language, eye contact direction]
+[VOLUME: soft / normal / loud]
+Script text here
+
+[pause — X seconds if needed]
+
+[INTRO — 5 to 15 seconds]
+[EMOTION: ...]
+[VOLUME: ...]
+Script text here
+
+[AGITATION — 15 to 25 seconds]
+[EMOTION: ...]
+[VOLUME: ...]
+Script text here
+
+[pause]
+
+[SOLUTION — 25 to 40 seconds]
+[EMOTION: ...]
+[VOLUME: ...]
+Script text here
+
+[PROOF — 40 to 50 seconds]
+[EMOTION: ...]
+[VOLUME: ...]
+Script text here
+
+[CTA — 50 to 60 seconds]
+[EMOTION: ...]
+[VOLUME: ...]
+Script text here
+
+---
+POST TEXT (for the Facebook post): write under 125 words
+HEADLINE (under 40 characters):
+CTA BUTTON TEXT:`:
+`WRITTEN AD:
+PRIMARY TEXT (under 125 words):
+HEADLINE (under 40 characters):
+DESCRIPTION (under 30 characters):
+CTA BUTTON:`,
+
+    google:`GOOGLE ADS:
+HEADLINE 1 (under 30 characters):
+HEADLINE 2 (under 30 characters):
+HEADLINE 3 (under 30 characters):
+DESCRIPTION 1 (under 90 characters):
+DESCRIPTION 2 (under 90 characters):
+DISPLAY URL PATH:`,
+
+    linkedin:`LINKEDIN AD:
+OPENING LINE (attention-grabbing, specific statistic or question):
+BODY (under 150 words, professional, ROI-focused, decision-maker language):
+CTA LINE:
+SUGGESTED HASHTAGS (3 maximum):`,
+
+    youtube: selFmt==='video'?
+`YOUTUBE VIDEO SCRIPT:
+[PATTERN INTERRUPT — 0 to 5 seconds]
+[EMOTION: ...]
+Script text
+
+[CURIOSITY LOOP — 5 to 15 seconds]
+[EMOTION: ...]
+Script text
+
+[AGITATION — 15 to 30 seconds]
+[EMOTION: ...]
+Script text
+
+[SOLUTION — 30 to 50 seconds]
+[EMOTION: ...]
+Script text
+
+[PROOF — 50 to 65 seconds]
+[EMOTION: ...]
+Script text
+
+[CTA — final 10 seconds]
+[EMOTION: ...]
+Script text`:
+`WRITTEN: provide video description and suggested thumbnail text`,
+
+    tiktok:`TIKTOK VIDEO SCRIPT:
+[HOOK — 0 to 2 seconds — must stop scroll in first moment]
+[EMOTION: authentic, casual, direct to camera]
+Script text
+
+[RELATABLE MOMENT — 2 to 8 seconds]
+[EMOTION: ...]
+Script text
+
+[VALUE REVEAL — 8 to 18 seconds]
+[EMOTION: ...]
+Script text
+
+[CTA — final 3 seconds]
+[EMOTION: ...]
+Script text`
+  };
+
+  return `You are Vizion Forge Ad Creative Engine. Your only purpose is to deliver the best possible business outcome for the user.
+
+ABSOLUTE RULES — NEVER VIOLATE:
+1. ONE idea per ad. One message. One emotion. One action. If you find a second point creeping in — cut it. That is a different ad entirely.
+2. Spoken word count MUST be ${wc.min} to ${wc.max} words. Natural speaking pace is 90 to 110 words per minute. A 60 second ad is roughly 100 words — not 185. Slower empathetic tone means fewer words per second. Count carefully.
+3. Every section of a video script MUST include emotion direction tags: tone quality, volume, energy level, and body language.
+4. The personal intro must sound like a real human being talking — not a corporate script being performed.
+5. Validate the offer before writing. If the offer has a problem, say so clearly and specifically before generating copy.
+6. Every compliance rule for this niche is non-negotiable. Never violate them regardless of what the user asks.
+7. Human voice test: read every line aloud at natural speaking pace. If any line sounds like copy being performed rather than a person talking — rewrite it.
+8. Research the audience before writing. Do not write based on assumptions.
+
+NICHE: ${nLabel}
+GOOD PRACTICES FOR THIS NICHE: ${n.good.join(' | ')}
+COMPLIANCE RISKS — NEVER DO ANY OF THESE: ${n.risk.join(' | ')}
+PREFERRED LANGUAGE FOR THIS NICHE: ${n.prefer.join(' | ')}
+WORDS AND PHRASES TO AVOID: ${n.avoid.join(', ')}
+COPY BEHAVIOR FOR THIS NICHE: ${n.copy}
+
+PLATFORM: ${selPlat} | FORMAT: ${selFmt} | DURATION: ${selectedDur} seconds
+TARGET WORD COUNT: ${wc.min} to ${wc.max} words (spoken portion only)
+TONE: ${selectedTone}
+LEAD PRIORITY: ${pri} — ${leadDef[pri]||leadDef.quality}
+
+OUTPUT FORMAT — USE THIS EXACT STRUCTURE EVERY TIME:
+
+## STRATEGIC AUDIT
+[PASS / NEEDS WORK / FAIL — specific reasoning. If NEEDS WORK or FAIL: state exact problem and what would perform better for this audience]
+
+## AUDIENCE INTELLIGENCE
+[Timing trigger — exact life moment this becomes urgent | What they have tried and why it failed | How they see themselves — their identity | Their emotional state the morning this ad finds them]
+
+## FAILURE MODE RISKS
+[2 to 3 specific risks: wrong audience signal language, claim that could fail fact-checking, tone mismatch with niche]
+
+## VARIATION 1
+${platFmt[selPlat]||platFmt.facebook}
+
+**Word Count:** [number]
+**Lead Filter:** [the specific qualifying language used in this variation]
+**Human Voice Check:** [NATURAL or ADJUSTED — if adjusted, note which lines were rewritten and why]
+
+## VARIATION 2
+[Different hook type, different emotional entry point, completely different opening — same format structure]
+**Word Count:** [number]
+**Lead Filter:** [qualifying language used]
+**Human Voice Check:** [NATURAL or ADJUSTED]
+
+## VARIATION 3
+[Third completely distinct angle and entry point — same format structure]
+**Word Count:** [number]
+**Lead Filter:** [qualifying language used]
+**Human Voice Check:** [NATURAL or ADJUSTED]
+
+## OFFER INTELLIGENCE NOTE
+[1 to 3 sentences of strategic insight about the offer, pricing, packaging, or market positioning that would improve results beyond the copy itself — the insight most ad writers never give you]`;
+}
+
+// ═══════════════════════════════════════════
+// USER PROMPT
+// ═══════════════════════════════════════════
+function buildUser(){
+  const selProd=products.length>1
+    ?products[parseInt(document.getElementById('prodSel')?.value||0)]
+    :products[0]||gv('brand')||'Not specified';
+  return `GENERATION REQUEST
+
+WHAT TO ADVERTISE: ${gv('idea')||'Use the business profile to find the strongest angle'}
+PRODUCT OR SERVICE: ${selProd}
+
+BUSINESS PROFILE:
+Brand: ${gv('brand')||'Not specified'}
+Personal Name and Title: ${gv('personalName')||'Not specified'}
+Who They Help: ${gv('audience')||'Not specified'}
+Pain Point: ${gv('pain')||'Not specified'}
+Key Result: ${gv('result')||'Not specified'}
+Price: ${gv('price')||'Not specified'}
+What They Have Tried: ${gv('tried')||'Not specified'}
+
+ADVANCED INPUTS:
+Specific Persona: ${gv('persona')||'Not specified'}
+Timing Trigger: ${gv('trigger')||'Not specified'}
+Mechanism: ${gv('mechanism')||'Not specified'}
+CTA Objective: ${gv('ctaObj')||'Not specified'}
+What Customers Say: ${gv('voc')||'None provided'}
+Objections: ${gv('objections')||'None provided'}
+Proof Assets: ${gv('proof')||'None provided'}
+Winning Angles: ${gv('winners')||'None provided'}
+
+Run the full pre-generation sequence. Validate the offer. Check niche compliance. Research the audience. Then write the ad. One idea only. Word count must match the duration exactly.`;
+}
+
+// ═══════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════
+async function callAPI(sys,user,maxTok=4500){
+  const res=await fetch(PROXY,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({system:sys,messages:[{role:'user',content:user}],max_tokens:maxTok})
+  });
+  if(!res.ok){
+    const e=await res.json().catch(()=>({}));
+    throw new Error(e.error?.message||'Connection failed. Please try again.');
+  }
+  const d=await res.json();
+  if(d.error)throw new Error(d.error.message||'Something went wrong. Please try again.');
+  return d.content?.[0]?.text||'';
+}
+
+// ═══════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════
+const PS=[
+  {id:'pc0',lbl:'Analyzing your offer...',pct:12},
+  {id:'pc1',lbl:'Researching your audience...',pct:28},
+  {id:'pc2',lbl:'Checking compliance rules...',pct:44},
+  {id:'pc3',lbl:'Writing your ad script...',pct:62},
+  {id:'pc4',lbl:'Adding emotion direction...',pct:78},
+  {id:'pc5',lbl:'Finalizing...',pct:88},
+];
+let psIdx=0;
+
+function startProg(){
+  stopProg();
+  psIdx=0;
+  document.getElementById('progWrap').classList.add('on');
+  document.getElementById('progFill').style.width='0%';
+  document.querySelectorAll('.pc').forEach(c=>c.classList.remove('on','done'));
+  moveProg(0);
+  progInt=setInterval(()=>{
+    psIdx++;
+    if(psIdx<PS.length)moveProg(psIdx);
+    else clearInterval(progInt);
+  },5500);
+}
+function moveProg(i){
+  const s=PS[i];
+  document.getElementById('progLbl').textContent=s.lbl;
+  document.getElementById('progFill').style.width=s.pct+'%';
+  if(i>0){
+    document.getElementById(PS[i-1].id).classList.remove('on');
+    document.getElementById(PS[i-1].id).classList.add('done');
+  }
+  document.getElementById(s.id).classList.add('on');
+}
+function stopProg(){
+  clearInterval(progInt);
+  document.getElementById('progWrap').classList.remove('on');
+  document.querySelectorAll('.pc').forEach(c=>c.classList.remove('on','done'));
+}
+function doneProg(){
+  clearInterval(progInt);
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('progLbl').textContent='✓ Done';
+  document.querySelectorAll('.pc').forEach(c=>{c.classList.remove('on');c.classList.add('done');});
+  setTimeout(()=>stopProg(),900);
+}
+
+// ═══════════════════════════════════════════
+// PARSE
+// ═══════════════════════════════════════════
+function secTxt(txt,label){
+  const re=new RegExp(`##\\s*${label}[\\s\\S]*?\\n([\\s\\S]*?)(?=##|$)`,'i');
+  const m=txt.match(re);
+  return m?m[1].trim():'';
+}
+function parseResp(txt){
+  const p={audit:{ico:'✅',ttl:'Offer Validated',vrd:'PASS',bd:''},audIntel:'',failRisks:'',vars:[],intel:''};
+  p.audit.bd=secTxt(txt,'STRATEGIC AUDIT');
+  const al=p.audit.bd.toLowerCase();
+  if(al.match(/fail|doesn.t match|does not match|problem with|wrong product|wrong offer/)){p.audit.ico='🚨';p.audit.ttl='Offer Issue Detected';p.audit.vrd='FAIL';}
+  else if(al.match(/needs work|consider|recommend|could be improved|suggest/)){p.audit.ico='⚠️';p.audit.ttl='Offer Can Be Stronger';p.audit.vrd='WARN';}
+  p.audIntel=secTxt(txt,'AUDIENCE INTELLIGENCE');
+  p.failRisks=secTxt(txt,'FAILURE MODE');
+  const vRe=/##\s*VARIATION\s*(\d+)([\s\S]*?)(?=##\s*VARIATION|##\s*OFFER INTELLIGENCE|$)/gi;
+  let vm;
+  while((vm=vRe.exec(txt))!==null){
+    const body=vm[2].trim();
+    const wcM=(body.match(/\*\*Word Count[:\*]*\s*(\d+)/i)||[])[1]||'—';
+    const filt=((body.match(/\*\*Lead Filter[:\*]*\s*([^\n\*]+)/i)||[])[1]||'').trim();
+    const hv=((body.match(/\*\*Human Voice[^:]*[:\*]*\s*([^\n\*]+)/i)||[])[1]||'NATURAL').trim();
+    p.vars.push({num:vm[1],body,wc:wcM,filter:filt,hv});
+  }
+  if(!p.vars.length)p.vars.push({num:'1',body:txt,wc:'—',filter:'',hv:'NATURAL'});
+  p.intel=secTxt(txt,'OFFER INTELLIGENCE NOTE');
+  return p;
+}
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function renderOut(p){
+  document.getElementById('outArea').classList.add('on');
+  document.getElementById('aIco').textContent=p.audit.ico;
+  document.getElementById('aTtl').textContent=p.audit.ttl;
+  const av=document.getElementById('aVrd');
+  av.textContent=p.audit.vrd;
+  av.className='vrd '+(p.audit.vrd==='PASS'?'pass':p.audit.vrd==='WARN'?'warn':'fail');
+  let aHtml=`<p>${md(p.audit.bd)}</p>`;
+  if(p.audIntel)aHtml+=`<hr><div class="asec">Audience Intelligence</div><p>${md(p.audIntel)}</p>`;
+  if(p.failRisks)aHtml+=`<hr><div class="asec">⚠️ Failure Mode Risks</div><p>${md(p.failRisks)}</p>`;
+  document.getElementById('aBd').innerHTML=aHtml;
+  const grid=document.getElementById('varGrid');
+  grid.innerHTML='';
+  lastVars=p.vars;
+  p.vars.forEach((v,i)=>grid.appendChild(mkCard(v,i)));
+  if(p.intel){document.getElementById('intelCard').classList.add('on');document.getElementById('intelBd').innerHTML=`<p>${md(p.intel)}</p>`;}
+  document.getElementById('chgCard').classList.add('on');
+  document.getElementById('vdict').classList.remove('on');
+}
+
+function mkCard(v,idx){
+  const d=document.createElement('div');
+  d.className='vc';d.id='vc'+idx;
+  const secs=parseSections(v.body);
+  d.innerHTML=`
+    <div class="vc-hd">
+      <span class="vc-num">V${v.num}</span>
+      <div class="vc-tags">
+        <span class="vtag t">${eh(selPlat.toUpperCase())}</span>
+        <span class="vtag">${eh(selFmt==='video'?'🎬 Script':'📝 Written')}</span>
+        <span class="vtag">${eh(selectedDur)}s</span>
+      </div>
+      <div class="vc-acts">
+        <button class="vab" id="cpb${idx}" onclick="copyVar(${idx},this)" title="Copy">📋</button>
+        <button class="vab" onclick="regenVar(${idx})" title="Regenerate">↺</button>
+      </div>
+    </div>
+    <div class="vc-body">${secs}</div>
+    ${v.filter?`<div style="padding:0 14px 12px;"><div style="background:rgba(180,83,9,.05);border:1px solid rgba(180,83,9,.15);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--warn);display:flex;gap:6px;"><span>🎯</span><span><strong>Lead Filter:</strong> ${eh(v.filter)}</span></div></div>`:''}
+    <div class="vc-ft">
+      <div class="wc">WORDS: <span>${v.wc}</span> &nbsp;·&nbsp; VOICE: <span style="color:${v.hv.toLowerCase().includes('natural')?'var(--good)':'var(--warn)'};">${eh(v.hv.split('—')[0].trim().substring(0,14))}</span></div>
+      <button class="btn-g" onclick="regenVar(${idx})" style="padding:5px 9px;font-size:11px;">↺ Regen</button>
+    </div>`;
+  return d;
+}
+
+function parseSections(body){
+  const labels='HOOK|INTRO|AGITATION|SOLUTION|PROOF(?: SIGNAL)?|CTA|PATTERN INTERRUPT|CURIOSITY LOOP|RELATABLE MOMENT|VALUE REVEAL|POST TEXT|PRIMARY TEXT|HEADLINE|DESCRIPTION|CTA BUTTON';
+  const re=new RegExp(`\\[(${labels})[^\\]]*\\]([\\s\\S]*?)(?=\\[(?:${labels})|\\*\\*Word|$)`,'gi');
+  const emotRe=/\[EMOTION[:\s]*([^\]]+)\]/gi;
+  const volRe=/\[VOLUME[:\s]*([^\]]+)\]/gi;
+  let secs=[],m;
+  while((m=re.exec(body))!==null){
+    let content=m[2].trim();
+    if(!content||content.length<3)continue;
+    const emotions=[];
+    let em;
+    while((em=emotRe.exec(content))!==null)emotions.push({cls:'tn',val:em[1]});
+    emotRe.lastIndex=0;
+    while((em=volRe.exec(content))!==null)emotions.push({cls:'vl',val:em[1]});
+    volRe.lastIndex=0;
+    content=content
+      .replace(/\[EMOTION[^\]]*\]/gi,'')
+      .replace(/\[VOLUME[^\]]*\]/gi,'')
+      .replace(/\[pause[^\]]*\]/gi,'<div class="ss-pause">[ pause ]</div>')
+      .trim();
+    if(content.length<3)continue;
+    secs.push({label:m[1].toUpperCase(),emotions,content});
+  }
+  if(!secs.length){
+    const clean=body.replace(/\*\*(?:Word Count|Lead Filter|Human Voice)[^*]*\*\*/gi,'').trim();
+    return `<div class="ss"><div class="ss-txt">${md(clean)}</div></div>`;
+  }
+  return secs.map(s=>`
+    <div class="ss">
+      <div class="ss-hd"><span class="ss-lbl">${eh(s.label)}</span></div>
+      ${s.emotions.length?`<div class="etags">${s.emotions.map(e=>`<span class="etag ${e.cls}">${eh(e.val)}</span>`).join('')}</div>`:''}
+      <div class="ss-txt">${s.content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════════
+async function doGen(){
+  if(!gv('brand')&&!gv('audience')&&!gv('idea')){
+    toast('⚠️ Fill in your business details first');goStep(0);return;
+  }
+  const btn=document.getElementById('genBtn');
+  btn.classList.add('ld');btn.disabled=true;
+  document.getElementById('outArea').classList.remove('on');
+  document.getElementById('errBox').classList.remove('on');
+  document.getElementById('intelCard').classList.remove('on');
+  document.getElementById('chgCard').classList.remove('on');
+  document.getElementById('varGrid').innerHTML='';
+  startProg();
+  try{
+    lastCtx=buildUser();
+    lastResp=await callAPI(buildSys(),lastCtx,4500);
+    if(!lastResp)throw new Error('No response received. Please try again.');
+    doneProg();
+    await new Promise(r=>setTimeout(r,500));
+    renderOut(parseResp(lastResp));
+    toast('✅ Ad creative ready');
+  }catch(e){
+    stopProg();
+    document.getElementById('errMsg').textContent=e.message||'Something went wrong. Please try again.';
+    document.getElementById('errBox').classList.add('on');
+    console.error(e);
+  }
+  btn.classList.remove('ld');btn.disabled=false;
+}
+
+// ═══════════════════════════════════════════
+// REGEN SINGLE
+// ═══════════════════════════════════════════
+async function regenVar(idx){
+  const card=document.getElementById('vc'+idx);
+  if(!card)return;
+  card.style.opacity='.4';card.style.pointerEvents='none';
+  try{
+    const txt=await callAPI(buildSys(),`Regenerate only Variation ${idx+1}. Use a completely different hook type, different emotional entry point, different opening angle. Same platform format, same duration word count. Output only that one variation in the exact same format.`,2000);
+    if(!txt)throw new Error('Empty response');
+    const p=parseResp(txt);
+    const nv=p.vars[0]||{num:idx+1,body:txt,wc:'—',filter:'',hv:'NATURAL'};
+    nv.num=idx+1;
+    lastVars[idx]=nv;
+    card.replaceWith(mkCard(nv,idx));
+    toast(`✅ Variation ${idx+1} regenerated`);
+  }catch(e){
+    card.style.opacity='1';card.style.pointerEvents='';
+    toast('❌ '+e.message);
+  }
+}
+
+// ═══════════════════════════════════════════
+// COPY
+// ═══════════════════════════════════════════
+function copyVar(idx,btn){
+  const v=lastVars[idx];
+  if(!v)return;
+  navigator.clipboard.writeText(v.body).then(()=>{
+    btn.classList.add('cp');btn.textContent='✓';
+    toast('📋 Copied to clipboard');
+    setTimeout(()=>{btn.classList.remove('cp');btn.textContent='📋';},2000);
+  }).catch(()=>toast('❌ Copy failed'));
+}
+
+// ═══════════════════════════════════════════
+// CHANGE EVAL
+// ═══════════════════════════════════════════
+async function doEval(){
+  const chg=gv('chgInp').trim();
+  if(!chg){toast('⚠️ Describe the change first');return;}
+  if(!lastResp){toast('⚠️ Generate an ad first');return;}
+  const btn=document.getElementById('evalBtn');
+  btn.disabled=true;btn.textContent='...';
+  try{
+    const usr=`CHANGE REQUEST EVALUATION
+
+Original context: ${lastCtx}
+
+Current variations:
+${lastVars.map((v,i)=>`VARIATION ${i+1}:\n${v.body}`).join('\n---\n')}
+
+REQUESTED CHANGE: "${chg}"
+
+Evaluate whether this change actually improves conversion and lead quality.
+Compare across: hook strength, lead quality filter, compliance fit, offer clarity, human voice, CTA friction level.
+
+Return exactly ONE verdict:
+VERDICT: BETTER — if it genuinely improves performance. Explain specifically why. Show updated versions.
+VERDICT: NEUTRAL — if it shifts style without improving conversion. Show the exact tradeoff. Show both versions.
+VERDICT: WORSE — if it hurts performance. Explain exactly why. Then show what should actually change to achieve the outcome they are really after.
+
+Be direct. The goal is the best result for their business — not their approval.`;
+    const txt=await callAPI(buildSys(),usr,2500);
+    if(!txt)throw new Error('Empty response');
+    const low=txt.toLowerCase();
+    let cls='nt',label='⚖️ NEUTRAL — Your call';
+    let canApply=true;
+    if(low.match(/verdict:\s*better/)){cls='bt';label='✅ BETTER — Recommended';}
+    else if(low.match(/verdict:\s*worse/)){cls='ws';label='🚫 WORSE — Not recommended';canApply=false;}
+    document.getElementById('vdHd').textContent=label;
+    document.getElementById('vdHd').className='vd-hd '+cls;
+    document.getElementById('vdBd').innerHTML=`<p>${md(txt)}</p>`+
+      (canApply?`<br><button class="btn-g" onclick="applyChg()" style="margin-top:6px;">Apply &amp; Regenerate</button>`:'');
+    document.getElementById('vdict').classList.add('on');
+    toast(cls==='bt'?'✅ Change recommended':cls==='ws'?'🚫 Would hurt results':'⚖️ Neutral — your call');
+  }catch(e){toast('❌ '+e.message);}
+  btn.disabled=false;btn.textContent='🔬 Evaluate';
+}
+async function applyChg(){
+  const chg=gv('chgInp');
+  const idea=document.getElementById('idea');
+  idea.value=(idea.value.trim()+' [APPLY: '+chg+']').trim();
+  document.getElementById('vdict').classList.remove('on');
+  document.getElementById('chgInp').value='';
+  await doGen();
+}
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function gv(id){return document.getElementById(id)?.value||'';}
+function eh(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function md(s){return(s||'').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');}
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('on');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('on'),3500);
+}
+</script>
+</body>
+</html>
