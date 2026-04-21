@@ -516,6 +516,52 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);over
   </div>
 
   <div class="card">
+    <div class="card-ttl">Traffic Temperature</div>
+    <div class="card-sub">Where is this audience in their awareness journey? This changes hook strategy, education level, and CTA friction.</div>
+    <div class="opt-grid" id="tempGrid">
+      <div class="oc sel" data-v="cold" onclick="selOpt(this,'temp')">
+        <div class="rec">★ Default</div>
+        <div class="oc-ico">🧊</div>
+        <div class="oc-name">Cold Traffic</div>
+        <div class="oc-desc">No prior awareness. Educate before selling.</div>
+      </div>
+      <div class="oc" data-v="warm" onclick="selOpt(this,'temp')">
+        <div class="oc-ico">🌤️</div>
+        <div class="oc-name">Warm Traffic</div>
+        <div class="oc-desc">Aware of the problem. Lead with differentiation.</div>
+      </div>
+      <div class="oc" data-v="retargeting" onclick="selOpt(this,'temp')">
+        <div class="oc-ico">🎯</div>
+        <div class="oc-name">Retargeting</div>
+        <div class="oc-desc">Already engaged. Handle objections. Drive action.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl">Campaign Objective</div>
+    <div class="card-sub">What action should happen after someone sees this ad? This sets CTA friction, copy framing, and qualification level.</div>
+    <div class="opt-grid" id="objGrid">
+      <div class="oc sel" data-v="booked_call" onclick="selOpt(this,'obj')">
+        <div class="rec">★ Recommended</div>
+        <div class="oc-ico">📅</div>
+        <div class="oc-name">Booked Call</div>
+        <div class="oc-desc">Drive to calendar. High-friction. Filter hard.</div>
+      </div>
+      <div class="oc" data-v="form_fill" onclick="selOpt(this,'obj')">
+        <div class="oc-ico">📋</div>
+        <div class="oc-name">Form Fill</div>
+        <div class="oc-desc">Lead form. Medium friction. Qualify in copy.</div>
+      </div>
+      <div class="oc" data-v="purchase" onclick="selOpt(this,'obj')">
+        <div class="oc-ico">💳</div>
+        <div class="oc-name">Purchase</div>
+        <div class="oc-desc">Direct sale. Remove barriers. Build urgency.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-ttl">What industry are you in?</div>
     <div class="card-sub">This sets the compliance rules and copy behavior specific to your industry. Every niche has different rules.</div>
     <div class="fld">
@@ -905,7 +951,9 @@ const WC = {
 // STATE
 // ═══════════════════════════════════════════
 let products=[], selPlat='facebook', selFmt='video', selectedDur='60', selectedTone='Conversational';
+let selTemp='cold', selObj='booked_call';
 let lastResp='', lastVars=[], lastCtx='';
+let lockedVar=null, editHistory=[];
 let progInt=null;
 
 // ═══════════════════════════════════════════
@@ -941,6 +989,8 @@ function selOpt(el,type){
     document.getElementById('durCard').style.display=selPlat==='google'?'none':'block';
   }
   if(type==='fmt') selFmt=el.dataset.v;
+  if(type==='temp') selTemp=el.dataset.v;
+  if(type==='obj') selObj=el.dataset.v;
 }
 function selectDur(el){
   document.querySelectorAll('.dc').forEach(c=>c.classList.remove('sel'));
@@ -1005,7 +1055,7 @@ function saveProfile(){
     price:gv('price'),tried:gv('tried'),niche:gv('niche'),customNiche:gv('customNiche'),
     persona:gv('persona'),trigger:gv('trigger'),mechanism:gv('mechanism'),ctaObj:gv('ctaObj'),
     voc:gv('voc'),objections:gv('objections'),proof:gv('proof'),winners:gv('winners'),
-    priority:gv('priority'),plat:selPlat,fmt:selFmt,dur:selectedDur,tone:selectedTone
+    priority:gv('priority'),plat:selPlat,fmt:selFmt,dur:selectedDur,tone:selectedTone,temp:selTemp,obj:selObj
   };
   localStorage.setItem('vf_v4',JSON.stringify(d));
   const ok=document.getElementById('saveOk');
@@ -1029,6 +1079,8 @@ function loadProfile(){
     if(d.fmt){selFmt=d.fmt;document.querySelectorAll('#fmtGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.fmt));}
     if(d.dur){selectedDur=d.dur;document.querySelectorAll('.dc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.dur));}
     if(d.tone){selectedTone=d.tone;document.querySelectorAll('.to').forEach(t=>t.classList.toggle('sel',t.dataset.v===d.tone));}
+    if(d.temp){selTemp=d.temp;document.querySelectorAll('#tempGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.temp));}
+    if(d.obj){selObj=d.obj;document.querySelectorAll('#objGrid .oc').forEach(c=>c.classList.toggle('sel',c.dataset.v===d.obj));}
   }catch(e){}
 }
 
@@ -1041,6 +1093,18 @@ function buildSys(){
   const nLabel=nKey==='other'?(gv('customNiche')||'Custom Industry'):n.label;
   const wc=WC[selectedDur]||WC['60'];
   const pri=gv('priority')||'quality';
+  const YMYL_NICHES=['life_insurance','health_insurance','financial_services','mortgage_lending','medical_dental','legal_services','real_estate'];
+  const isYMYL=YMYL_NICHES.includes(nKey);
+  const tempDef={
+    cold:'COLD TRAFFIC — No prior awareness. Lead with problem recognition or identity. Educate before selling. High education in copy, medium-to-high CTA friction.',
+    warm:'WARM TRAFFIC — Audience is aware of the problem or solution category. Skip basic education. Lead with differentiation, proof, and social validation. Medium CTA friction.',
+    retargeting:'RETARGETING — Audience has already engaged, visited, or shown intent. Skip awareness and education entirely. Lead with objection handling, urgency, or specific proof. Low CTA friction. Direct offer language is appropriate.'
+  };
+  const objDef={
+    booked_call:'CAMPAIGN OBJECTIVE — BOOKED CALL: CTA must drive to a calendar or booking page. Filter out unqualified leads hard in the copy. Pre-frame the call as criteria-based or exclusive. CTA language: "see if you qualify for a call", "answer a few questions to book a time".',
+    form_fill:'CAMPAIGN OBJECTIVE — FORM FILL: CTA drives to a lead form. Qualify the lead in the copy so form submissions are higher quality. CTA language: "answer a few questions", "see if you qualify", "get your free quote", "check your eligibility".',
+    purchase:'CAMPAIGN OBJECTIVE — PURCHASE: CTA drives directly to a purchase decision. Remove barriers, build urgency, eliminate objections. CTA language: "get it now", "order today", "start today", "claim your spot".'
+  };
 
   const leadDef={
     quality:'Quality-first: narrow the audience identification, use strong self-disqualification language woven naturally into the copy, CTA with medium-to-high friction, minimal broad curiosity bait, more expectation-setting before the click, specific qualification criteria stated clearly',
@@ -1095,13 +1159,17 @@ HEADLINE (under 40 characters):
 DESCRIPTION (under 30 characters):
 CTA BUTTON:`,
 
-    google:`GOOGLE ADS:
-HEADLINE 1 (under 30 characters):
-HEADLINE 2 (under 30 characters):
-HEADLINE 3 (under 30 characters):
-DESCRIPTION 1 (under 90 characters):
-DESCRIPTION 2 (under 90 characters):
-DISPLAY URL PATH:`,
+    google:`GOOGLE RESPONSIVE SEARCH AD (RSA):
+[HEADLINE 1] (max 30 characters — count every character including spaces)
+[HEADLINE 2] (max 30 characters)
+[HEADLINE 3] (max 30 characters)
+[HEADLINE 4] (max 30 characters)
+[HEADLINE 5] (max 30 characters)
+[DESCRIPTION 1] (max 90 characters — count every character including spaces)
+[DESCRIPTION 2] (max 90 characters)
+[DESCRIPTION 3] (max 90 characters)
+[DISPLAY URL PATH] path1 / path2 (max 15 characters each)
+[NEGATIVE KEYWORDS] list 5 to 10 negative keywords, one per line, with match type noted: [exact], [phrase], or broad`,
 
     linkedin:`LINKEDIN AD:
 OPENING LINE (attention-grabbing, specific statistic or question):
@@ -1158,13 +1226,19 @@ Script text`
 
 ABSOLUTE RULES — NEVER VIOLATE:
 1. ONE idea per ad. One message. One emotion. One action. If you find a second point creeping in — cut it. That is a different ad entirely.
-2. Spoken word count MUST be ${wc.min} to ${wc.max} words. Natural speaking pace is 90 to 110 words per minute. A 60 second ad is roughly 100 words — not 185. Slower empathetic tone means fewer words per second. Count carefully.
+${selPlat==='google'?'2. GOOGLE CHARACTER LIMITS ARE ABSOLUTE — count every character including spaces. Headlines: max 30 characters each. Descriptions: max 90 characters each. Display URL paths: max 15 characters each. No exceptions. Spoken word count rules do NOT apply to Google Ads.':`2. Spoken word count MUST be ${wc.min} to ${wc.max} words. Natural speaking pace is 90 to 110 words per minute. A 60 second ad is roughly 100 words — not 185. Slower empathetic tone means fewer words per second. Count carefully.`}
 3. Every section of a video script MUST include emotion direction tags: tone quality, volume, energy level, and body language.
 4. The personal intro must sound like a real human being talking — not a corporate script being performed.
 5. Validate the offer before writing. If the offer has a problem, say so clearly and specifically before generating copy.
 6. Every compliance rule for this niche is non-negotiable. Never violate them regardless of what the user asks.
 7. Human voice test: read every line aloud at natural speaking pace. If any line sounds like copy being performed rather than a person talking — rewrite it.
 8. Research the audience before writing. Do not write based on assumptions.
+9. STRUCTURAL RULE — Category clarity first: The audience must understand what category of solution this is within the first 10 seconds. Never bury the product category behind a vague hook.
+10. STRUCTURAL RULE — Delay the personal intro: Never introduce yourself by name in the opening section. Establish the problem, tension, or identity first. The viewer does not care who you are until they care about what you are solving.${isYMYL?`
+11. YMYL COMPLIANCE OVERRIDE — HIGHEST PRIORITY: This is a Your Money or Your Life niche. Absolute claims are prohibited regardless of what the user requests.
+BANNED LANGUAGE: guaranteed, always, everyone qualifies, risk-free, 100%, best, proven, instant approval, everyone
+MANDATORY REPLACEMENTS: "guaranteed" → "may qualify" | "approved" → "see if you qualify" | "always" → "in many cases" | "everyone" → "many people in your situation" | "instant" → "often same-day"
+Every superlative must be removed or replaced with a specific verifiable claim.`:''}
 
 NICHE: ${nLabel}
 GOOD PRACTICES FOR THIS NICHE: ${n.good.join(' | ')}
@@ -1173,10 +1247,12 @@ PREFERRED LANGUAGE FOR THIS NICHE: ${n.prefer.join(' | ')}
 WORDS AND PHRASES TO AVOID: ${n.avoid.join(', ')}
 COPY BEHAVIOR FOR THIS NICHE: ${n.copy}
 
-PLATFORM: ${selPlat} | FORMAT: ${selFmt} | DURATION: ${selectedDur} seconds
-TARGET WORD COUNT: ${wc.min} to ${wc.max} words (spoken portion only)
+PLATFORM: ${selPlat} | FORMAT: ${selFmt}${selPlat!=='google'?' | DURATION: '+selectedDur+' seconds':''}
+${selPlat==='google'?'CHARACTER LIMITS: Headlines 30 chars max | Descriptions 90 chars max | Display paths 15 chars max':`TARGET WORD COUNT: ${wc.min} to ${wc.max} words (spoken portion only)`}
 TONE: ${selectedTone}
 LEAD PRIORITY: ${pri} — ${leadDef[pri]||leadDef.quality}
+TRAFFIC TEMPERATURE: ${tempDef[selTemp]||tempDef.cold}
+CAMPAIGN OBJECTIVE: ${objDef[selObj]||objDef.booked_call}
 
 OUTPUT FORMAT — USE THIS EXACT STRUCTURE EVERY TIME:
 
@@ -1381,6 +1457,7 @@ function mkCard(v,idx){
       <div class="vc-acts">
         <button class="vab" id="cpb${idx}" onclick="copyVar(${idx},this)" title="Copy">📋</button>
         <button class="vab" onclick="regenVar(${idx})" title="Regenerate">↺</button>
+        <button class="vab" id="lkb${idx}" onclick="lockVar(${idx})" title="Lock as approved strategy">${lockedVar===idx?'🔒':'🔓'}</button>
       </div>
     </div>
     <div class="vc-body">${secs}</div>
@@ -1393,7 +1470,7 @@ function mkCard(v,idx){
 }
 
 function parseSections(body){
-  const labels='HOOK|INTRO|AGITATION|SOLUTION|PROOF(?: SIGNAL)?|CTA|PATTERN INTERRUPT|CURIOSITY LOOP|RELATABLE MOMENT|VALUE REVEAL|POST TEXT|PRIMARY TEXT|HEADLINE|DESCRIPTION|CTA BUTTON';
+  const labels='HOOK|INTRO|AGITATION|SOLUTION|PROOF(?: SIGNAL)?|CTA|PATTERN INTERRUPT|CURIOSITY LOOP|RELATABLE MOMENT|VALUE REVEAL|POST TEXT|PRIMARY TEXT|HEADLINE(?: \\d+)?|DESCRIPTION(?: \\d+)?|CTA BUTTON|DISPLAY URL PATH|NEGATIVE KEYWORDS';
   const re=new RegExp(`\\[(${labels})[^\\]]*\\]([\\s\\S]*?)(?=\\[(?:${labels})|\\*\\*Word|$)`,'gi');
   const emotRe=/\[EMOTION[:\s]*([^\]]+)\]/gi;
   const volRe=/\[VOLUME[:\s]*([^\]]+)\]/gi;
@@ -1444,6 +1521,8 @@ async function doGen(){
   startProg();
   try{
     lastCtx=buildUser();
+    lockedVar=null;
+    editHistory=[];
     lastResp=await callAPI(buildSys(),lastCtx,4500);
     if(!lastResp)throw new Error('No response received. Please try again.');
     doneProg();
@@ -1495,6 +1574,18 @@ function copyVar(idx,btn){
 }
 
 // ═══════════════════════════════════════════
+// LOCK STRATEGY
+// ═══════════════════════════════════════════
+function lockVar(idx){
+  lockedVar=lockedVar===idx?null:idx;
+  document.querySelectorAll('[id^="lkb"]').forEach((b,i)=>{
+    b.textContent=lockedVar===i?'🔒':'🔓';
+    b.title=lockedVar===i?'Strategy locked — edits anchor to this variation':'Lock as approved strategy';
+  });
+  toast(lockedVar===idx?'🔒 Strategy locked — edits will anchor to this variation':'🔓 Lock released');
+}
+
+// ═══════════════════════════════════════════
 // CHANGE EVAL
 // ═══════════════════════════════════════════
 async function doEval(){
@@ -1504,20 +1595,26 @@ async function doEval(){
   const btn=document.getElementById('evalBtn');
   btn.disabled=true;btn.textContent='...';
   try{
+    const editObj={
+      original_request:lastCtx,
+      locked_variation:lockedVar!==null?{index:lockedVar+1,content:lastVars[lockedVar]?.body||''}:null,
+      all_variations:lastVars.map((v,i)=>({index:i+1,content:v.body})),
+      requested_change:chg,
+      prior_edits:editHistory.slice(-3)
+    };
     const usr=`CHANGE REQUEST EVALUATION
 
-Original context: ${lastCtx}
+STRUCTURED EDIT STATE:
+${JSON.stringify(editObj,null,2)}
 
-Current variations:
-${lastVars.map((v,i)=>`VARIATION ${i+1}:\n${v.body}`).join('\n---\n')}
+${lockedVar!==null?`ANCHOR: Variation ${lockedVar+1} is the locked approved strategy. Evaluate this change against it specifically. Do not drift from its core angle, structure, or qualifying language unless the change explicitly improves those elements.`:'No variation is locked. Evaluate the change across all variations.'}
 
-REQUESTED CHANGE: "${chg}"
-
-Evaluate whether this change actually improves conversion and lead quality.
+Evaluate whether the requested change actually improves conversion and lead quality.
 Compare across: hook strength, lead quality filter, compliance fit, offer clarity, human voice, CTA friction level.
+${editHistory.length>0?`DRIFT CHECK: ${editHistory.length} prior edit(s) have been applied. Flag if repeated edits are weakening the core message or diluting the qualifying language.`:''}
 
 Return exactly ONE verdict:
-VERDICT: BETTER — if it genuinely improves performance. Explain specifically why. Show updated versions.
+VERDICT: BETTER — if it genuinely improves performance. Explain specifically why. Show updated version${lockedVar!==null?` of Variation ${lockedVar+1}`:'s'}.
 VERDICT: NEUTRAL — if it shifts style without improving conversion. Show the exact tradeoff. Show both versions.
 VERDICT: WORSE — if it hurts performance. Explain exactly why. Then show what should actually change to achieve the outcome they are really after.
 
@@ -1540,6 +1637,8 @@ Be direct. The goal is the best result for their business — not their approval
 }
 async function applyChg(){
   const chg=gv('chgInp');
+  editHistory.push({change:chg,locked_var:lockedVar,timestamp:Date.now()});
+  if(editHistory.length>10)editHistory.shift();
   const idea=document.getElementById('idea');
   idea.value=(idea.value.trim()+' [APPLY: '+chg+']').trim();
   document.getElementById('vdict').classList.remove('on');
